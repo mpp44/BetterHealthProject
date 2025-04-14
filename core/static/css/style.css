@@ -1,0 +1,242 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: lightblue;
+    color: #333;
+    line-height: 1.6;
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.container {
+    flex: 1;
+    padding: 20px;
+}
+
+header {
+    background-color: #fcfcfc;
+    color: #1f1c1c;
+    padding: 15px 0;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+header h1 {
+    font-size: 36px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.navbar {
+    margin-bottom: 20px;
+    background-color: #8a8d94;
+    padding: 10px;
+}
+
+.navbar a {
+    color: #fff;
+    text-decoration: none;
+    padding: 10px 20px;
+    margin: 0 15px;
+    border-radius: 5px;
+    font-size: 20px;
+    transition: background-color 0.3s;
+    display: inline-block;
+}
+
+.navbar a:hover {
+    background-color: #e7c352;
+    color: #fff;
+}
+
+form button[type="submit"].navbar {
+    padding: 10px 20px;
+    margin: 0 15px;
+    text-decoration: none;
+    font-size: 20px;
+    background-color: inherit;
+    border: none;
+    color: #fff;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+    display: inline-block;
+}
+
+form button[type="submit"].navbar:hover {
+    background-color: #e7c352;
+}
+
+.card {
+    border: none;
+    background-color: #fff;
+    overflow: hidden;
+    margin-top: 30px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.card-body {
+    padding: 20px;
+    text-align: center;
+}
+
+.card-title {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.card-text {
+    font-size: 20px;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.card-body a {
+    display: inline-block;
+    padding: 12px 25px;
+    background-color: #28a745;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 18px;
+    transition: background-color 0.3s ease;
+}
+
+.card-body a:hover {
+    background-color: #338a44;
+    color: black;
+}
+
+.footer {
+    background-color: #343a40;
+    color: #fff;
+    text-align: center;
+    padding: 20px 0;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}
+
+.footer-text {
+    font-size: 14px;
+    color: #aaa;
+    padding: 10px;
+}
+
+.btn {
+    display: inline-block;
+    padding: 15px 30px;
+    margin: 15px;
+    background-color: #8a8d94;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 20px;
+    text-align: center;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.btn:hover {
+    background-color: #e7c352;
+    transform: translateY(-2px);
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 20vh;
+    flex-direction: row;
+    text-align: center;
+}
+
+.card2 {
+    background: lightblue;
+    border: none;
+    max-width: 1000px;
+    width: 200%;
+}
+
+h2 {
+    font-weight: bold;
+}
+
+form input {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+}
+
+.btn2 {
+    background-color: #007bff;
+    border: none;
+    padding: 10px;
+    font-size: 18px;
+    transition: 0.3s;
+}
+
+.btn2:hover {
+    background-color: #0565cb;
+    transform: translateY(-1px);
+}
+
+.text-decoration-none {
+    color: #007bff;
+}
+
+.text-decoration-none:hover {
+    text-decoration: underline;
+}
+
+.btn-delete {
+    background-color: #dc3545;
+    color: white;
+    font-weight: bold;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: background-color 0.3s, transform 0.2s;
+    cursor: pointer;
+}
+
+.btn-delete:hover {
+    background-color: #c22132;
+    transform: scale(1.05);
+}
+
+.btn-delete:active {
+    transform: scale(0.95);
+}
+
+.btn3 {
+    display: inline-block;
+    padding: 15px 30px;
+    margin: 15px;
+    background-color: #0b70d2;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 20px;
+    text-align: center;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.btn3:hover {
+    background-color: #0565cb;
+    transform: translateY(-2px);
+}
