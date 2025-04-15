@@ -1,6 +1,10 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
+from .models import Service, Appointment, Schedule
+
+
 
 def home(request):
     return render(request, 'index.html')
@@ -20,6 +24,18 @@ def signup(request):
 
 def mock(request):
     return render(request, 'mock.html')
+
+@login_required(login_url='login')
+def patient(request):
+    appointments = Appointment.objects.filter(user=request.user)
+    for appointment in appointments:
+        if not appointment.schedule:
+            appointment.delete()
+    return render(request, "patient.html", {"appointment": None})
+
+
+
+
 
 
 

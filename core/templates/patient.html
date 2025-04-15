@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <header>
+        <h1>Bienvenido, {{ user.username }}</h1>
+        <p>¡Gracias por visitar nuestra clínica!</p>
+    </header>
+
+    <div class="button-container">
+        <a href="{% url 'mock' %}" class="btn">Reservar una cita</a>
+        <a href="{% url 'mock' %}" class="btn">Área Personal</a>
+    </div>
+
+    {% if appointment %}
+    <script>
+        var message = 'Cita reservada correctamente para {{ appointment.service.name }}\n\n' +
+            'Duración: {{ appointment.service.duration }} minutos\n' +
+            'Precio: {{ appointment.service.price }}€\n' +
+            'Mutua: {{ appointment.insurance|yesno:"Sí,No" }}';
+        alert(message);
+    </script>
+    {% endif %}
+</div>
+{% endblock %}
+
+
+
