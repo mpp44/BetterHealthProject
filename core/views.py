@@ -33,6 +33,20 @@ def patient(request):
             appointment.delete()
     return render(request, "patient.html", {"appointment": None})
 
+def has_insurance(request):
+    Appointment.objects.create(user=request.user)
+    return render(request, "has_insurance.html")
+
+def update_appointment(request):
+    appointment = Appointment.objects.filter(user=request.user).last()
+
+    if appointment:
+        appointment.insurance = True
+        appointment.save()
+
+    return redirect('mock')
+
+
 
 
 

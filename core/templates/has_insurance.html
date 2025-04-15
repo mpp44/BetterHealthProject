@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <header>
+        <h1>¿Tiene Mútua?</h1>
+    </header>
+
+    <div class="button-container">
+        <a href="{% url 'update_appointment' %}" class="btn">SÍ</a>
+        <a href="{% url 'mock' %}" class="btn">NO</a>
+    </div>
+</div>
+{% endblock %}
