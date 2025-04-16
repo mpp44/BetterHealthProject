@@ -1,0 +1,236 @@
+[
+  {
+    "name": "Consulta médica general",
+    "description": "Evaluación general de la salud del paciente.",
+    "type": "Consulta General",
+    "price": 50,
+    "insurance": true,
+    "duration": 30,
+    "authorization": false
+  },
+  {
+    "name": "Consulta de especialidad (Cardiología)",
+    "description": "Valoración especializada del sistema cardiovascular.",
+    "type": "Consulta Especializada",
+    "price": 80,
+    "insurance": true,
+    "duration": 40,
+    "authorization": true
+  },
+  {
+    "name": "Consulta de especialidad (Dermatología)",
+    "description": "Diagnóstico y tratamiento de enfermedades de la piel.",
+    "type": "Consulta Especializada",
+    "price": 75,
+    "insurance": true,
+    "duration": 30,
+    "authorization": true
+  },
+  {
+    "name": "Consulta de especialidad (Neurología)",
+    "description": "Evaluación y diagnóstico de trastornos neurológicos.",
+    "type": "Consulta Especializada",
+    "price": 90,
+    "insurance": false,
+    "duration": 45,
+    "authorization": true
+  },
+  {
+    "name": "Análisis de sangre completo",
+    "description": "Examen general de componentes sanguíneos.",
+    "type": "Prueba Diagnóstica",
+    "price": 40,
+    "insurance": true,
+    "duration": 15,
+    "authorization": false
+  },
+  {
+    "name": "Electrocardiograma (ECG)",
+    "description": "Registro de la actividad eléctrica del corazón.",
+    "type": "Prueba Diagnóstica",
+    "price": 35,
+    "insurance": true,
+    "duration": 20,
+    "authorization": false
+  },
+  {
+    "name": "Ecografía abdominal",
+    "description": "Exploración por ultrasonido de órganos abdominales.",
+    "type": "Prueba Diagnóstica",
+    "price": 90,
+    "insurance": false,
+    "duration": 30,
+    "authorization": false
+  },
+  {
+    "name": "Resonancia Magnética (RMN)",
+    "description": "Exploración por imágenes de alta resolución del cuerpo.",
+    "type": "Prueba Diagnóstica",
+    "price": 250,
+    "insurance": false,
+    "duration": 60,
+    "authorization": false
+  },
+  {
+    "name": "Radiografía de tórax",
+    "description": "Imagen del tórax para evaluar pulmones y corazón.",
+    "type": "Prueba Diagnóstica",
+    "price": 50,
+    "insurance": true,
+    "duration": 20,
+    "authorization": false
+  },
+  {
+    "name": "Colonoscopia",
+    "description": "Exploración del colon mediante endoscopio.",
+    "type": "Prueba Diagnóstica",
+    "price": 300,
+    "insurance": false,
+    "duration": 45,
+    "authorization": false
+  },
+  {
+    "name": "Fisioterapia rehabilitadora",
+    "description": "Terapia física para recuperación de lesiones.",
+    "type": "Terapia",
+    "price": 60,
+    "insurance": true,
+    "duration": 45,
+    "authorization": false
+  },
+  {
+    "name": "Sesión de psicología clínica",
+    "description": "Evaluación y tratamiento psicológico.",
+    "type": "Terapia",
+    "price": 70,
+    "insurance": false,
+    "duration": 50,
+    "authorization": false
+  },
+  {
+    "name": "Consulta de ginecología",
+    "description": "Revisión ginecológica y prevención de enfermedades.",
+    "type": "Consulta Especializada",
+    "price": 80,
+    "insurance": true,
+    "duration": 40,
+    "authorization": true
+  },
+  {
+    "name": "Consulta de pediatría",
+    "description": "Valoración de la salud infantil.",
+    "type": "Consulta Especializada",
+    "price": 60,
+    "insurance": true,
+    "duration": 30,
+    "authorization": true
+  },
+  {
+    "name": "Extracción de lunar",
+    "description": "Procedimiento quirúrgico menor para eliminar lunares.",
+    "type": "Cirugía Menor",
+    "price": 120,
+    "insurance": false,
+    "duration": 30,
+    "authorization": false
+  },
+  {
+    "name": "Vacunación antigripal",
+    "description": "Administración de vacuna contra la gripe.",
+    "type": "Prevención",
+    "price": 25,
+    "insurance": true,
+    "duration": 15,
+    "authorization": false
+  },
+  {
+    "name": "Ergometría (Prueba de esfuerzo)",
+    "description": "Evaluación del rendimiento cardíaco bajo esfuerzo.",
+    "type": "Prueba Diagnóstica",
+    "price": 110,
+    "insurance": false,
+    "duration": 45,
+    "authorization": false
+  },
+  {
+    "name": "Holter de presión arterial",
+    "description": "Monitoreo continuo de la presión arterial.",
+    "type": "Prueba Diagnóstica",
+    "price": 90,
+    "insurance": true,
+    "duration": 30,
+    "authorization": false
+  },
+  {
+    "name": "Consulta de otorrinolaringología",
+    "description": "Diagnóstico y tratamiento de problemas de oído, nariz y garganta.",
+    "type": "Consulta Especializada",
+    "price": 85,
+    "insurance": false,
+    "duration": 40,
+    "authorization": true
+  },
+  {
+    "name": "Consulta de especialidad (Neurología)",
+    "description": "Evaluación y diagnóstico de trastornos neurológicos.",
+    "type": "Consulta Especializada",
+    "price": 95,
+    "insurance": false,
+    "duration": 45,
+    "authorization": true
+  },
+  {
+    "name": "Extracción de lunar",
+    "description": "Procedimiento quirúrgico menor para eliminar lunares.",
+    "type": "Cirugía Menor",
+    "price": 125,
+    "insurance": false,
+    "duration": 30,
+    "authorization": false
+  },
+  {
+    "name": "Consulta de otorrinolaringología",
+    "description": "Diagnóstico y tratamiento de problemas de oído, nariz y garganta.",
+    "type": "Consulta Especializada",
+    "price": 100,
+    "insurance": false,
+    "duration": 40,
+    "authorization": true
+  },
+  {
+    "name": "Colonoscopia",
+    "description": "Exploración del colon mediante endoscopio.",
+    "type": "Prueba Diagnóstica",
+    "price": 305,
+    "insurance": false,
+    "duration": 45,
+    "authorization": false
+  },
+  {
+    "name": "Ecografía abdominal",
+    "description": "Exploración por ultrasonido de órganos abdominales.",
+    "type": "Prueba Diagnóstica",
+    "price": 95,
+    "insurance": false,
+    "duration": 30,
+    "authorization": false
+  },
+  {
+    "name": "Consulta de especialidad (Cardiología)",
+    "description": "Valoración especializada del sistema cardiovascular.",
+    "type": "Consulta Especializada",
+    "price": 100,
+    "insurance": true,
+    "duration": 40,
+    "authorization": true
+  },
+  {
+    "name": "Consulta de especialidad (Neurología)",
+    "description": "Evaluación y diagnóstico de trastornos neurológicos.",
+    "type": "Consulta Especializada",
+    "price": 95,
+    "insurance": false,
+    "duration": 45,
+    "authorization": true
+  }
+]

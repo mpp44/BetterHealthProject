@@ -5,9 +5,9 @@ from django.contrib.auth.forms import UserCreationForm
 from .models import Service, Appointment, Schedule
 
 
-
 def home(request):
     return render(request, 'index.html')
+
 
 def signup(request):
     if request.method == "POST":
@@ -22,8 +22,10 @@ def signup(request):
         form = UserCreationForm()
     return render(request, 'signup.html', {'form': form})
 
+
 def mock(request):
     return render(request, 'mock.html')
+
 
 @login_required(login_url='login')
 def patient(request):
@@ -33,9 +35,11 @@ def patient(request):
             appointment.delete()
     return render(request, "patient.html", {"appointment": None})
 
+
 def has_insurance(request):
     Appointment.objects.create(user=request.user)
     return render(request, "has_insurance.html")
+
 
 def update_appointment(request):
     appointment = Appointment.objects.filter(user=request.user).last()
@@ -44,15 +48,13 @@ def update_appointment(request):
         appointment.insurance = True
         appointment.save()
 
-    return redirect('mock')
+    return redirect('service')
 
 
-
-
-
-
-
-
-
-
-
+def service(request):
+    appointment = Appointment.objects.filter(user=request.user).last()
+    if appointment.insurance is False:
+        services = Service.objects.filter(insurance=False)
+    else:
+        services = Service.objects.all()
+    return render(request, "service.html", {"services": services})
