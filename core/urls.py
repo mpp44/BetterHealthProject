@@ -8,7 +8,8 @@ urlpatterns = [
     path('has_insurance/', views.has_insurance, name='has_insurance'),
     path('update-appointment/', views.update_appointment, name='update_appointment'),
     path('service/', views.service, name='service'),
-
+    path('service/<int:service_id>/', views.select_service, name="select_service"),
+    path('schedule/<int:schedule_id>/', views.select_schedule, name='select_schedule'),
 
     path('mock/', views.mock, name='mock'),
     path('signup/', views.signup, name='signup'),

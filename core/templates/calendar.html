@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <header class="text-center my-4">
+        <h1>Available Schedules</h1>
+    </header>
+
+    <div class="row">
+        {% for schedule in schedules %}
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">{{ schedule.service.name }}</h5>
+                    <p class="card-text">Día: {{ schedule.day }}</p>
+                    <p class="card-text">Hora: {{ schedule.time|time:"H:i" }}</p>
+                    <a href="{% url 'select_schedule' schedule.id%}">Seleccionar</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center">
+            <p class="list-group-item-warning text-muted">No hay horarios disponibles</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

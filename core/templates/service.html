@@ -16,7 +16,7 @@
                             <p class="card-text mb-1">Precio: {{ service.price }}€</p>
                             <p class="card-text mb-1">Incluido en Mútua: {{ service.insurance|yesno:"Sí,No" }}</p>
                             <p class="card-text">Duración: {{ service.duration }} minutos</p>
-                            <a href="{% url 'mock'  %}">Seleccionar</a>
+                            <a href="{% url 'select_service' service.id %}">Seleccionar</a>
                         </div>
                     </div>
                 </div>
