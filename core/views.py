@@ -105,3 +105,7 @@ def select_schedule(request, schedule_id):
     schedule.available = False
     schedule.save()
     return render(request, "patient.html", {"appointment": appointment})
+
+def history(request):
+    appointments = Appointment.objects.filter(user=request.user)
+    return render(request, "history.html", {"appointments": appointments})
