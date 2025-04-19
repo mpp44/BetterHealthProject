@@ -127,4 +127,4 @@ def edit_appointment(request, appointment_id):
     schedules = Schedule.objects.filter(service=appointment.service, available=True)
     upcoming_slots = generate_upcoming_slots(schedules)
     request.session['editing_appointment_id'] = appointment.id
-    return render(request, 'myapp/calendar.html', {'schedules': upcoming_slots})
+    return render(request, 'calendar.html', {'schedules': upcoming_slots})
