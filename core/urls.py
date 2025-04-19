@@ -11,6 +11,8 @@ urlpatterns = [
     path('service/', views.service, name='service'),
     path('service/<int:service_id>/', views.select_service, name="select_service"),
     path('schedule/<int:schedule_id>/', views.select_schedule, name='select_schedule'),
+    path('history/delete_appointment/<int:appointment_id>/', views.delete_appointment, name='delete_appointment'),
+    path('history/edit_appointment/<int:appointment_id>', views.edit_appointment, name='edit_appointment'),
 
     path('mock/', views.mock, name='mock'),
     path('signup/', views.signup, name='signup'),

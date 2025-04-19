@@ -10,6 +10,11 @@
         {% for appointment in appointments %}
         <li class="list-group-item d-flex justify-content-between align-items-center text-start">
             Reserva de <strong>{{ appointment.service.name }}</strong> para el <strong>{{ appointment.schedule.get_weekday_display }}</strong> a las <strong>{{ appointment.schedule.time|time:"H:i" }}</strong>
+            <a href="{% url 'edit_appointment' appointment.id %}" class="btn btn-warning">Editar</a>
+            <form method="post" action="{% url 'delete_appointment' appointment.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-delete">Cancelar cita</button>
+            </form>
         </li>
         {% empty %}
         <li class="list-group-item list-group-item-warning text-muted text-center">No se ha reservado ninguna cita.</li>
@@ -17,3 +22,12 @@
     </ul>
 </div>
 {% endblock %}
+
+
+
+
+
+
+
+
+

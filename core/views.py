@@ -106,6 +106,25 @@ def select_schedule(request, schedule_id):
     schedule.save()
     return render(request, "patient.html", {"appointment": appointment})
 
+
 def history(request):
     appointments = Appointment.objects.filter(user=request.user)
     return render(request, "history.html", {"appointments": appointments})
+
+
+def delete_appointment(request, appointment_id):
+    appointment = get_object_or_404(Appointment, id=appointment_id, user=request.user)
+    appointment.delete()
+    if appointment.schedule is not None:
+        schedule = appointment.schedule
+        schedule.available = True
+        schedule.save()
+    return redirect('history')
+
+
+def edit_appointment(request, appointment_id):
+    appointment = get_object_or_404(Appointment, id=appointment_id)
+    schedules = Schedule.objects.filter(service=appointment.service, available=True)
+    upcoming_slots = generate_upcoming_slots(schedules)
+    request.session['editing_appointment_id'] = appointment.id
+    return render(request, 'myapp/calendar.html', {'schedules': upcoming_slots})
