@@ -2,13 +2,22 @@
 
 {% block content %}
 <div class="container">
-    <header>
-        <h1>¿Tiene Mútua?</h1>
+    <header class="section">
+        <h1 class="signup-title">¿Tiene Mútua?</h1>
     </header>
 
-    <div class="button-container">
-        <a href="{% url 'update_appointment' %}" class="btn">SÍ</a>
-        <a href="{% url 'services' %}" class="btn">NO</a>
+     <div class="grid">
+        <a href="{% url 'update_appointment' %}" class="card-link">
+          <div class="card">
+            <h3>SÍ</h3>
+          </div>
+        </a>
+        <a href="{% url 'service' %}" class="card-link">
+          <div class="card">
+            <h3>NO</h3>
+          </div>
+        </a>
     </div>
+
 </div>
 {% endblock %}

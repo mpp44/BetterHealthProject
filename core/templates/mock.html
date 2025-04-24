@@ -1,52 +1,40 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Contenido en Desarrollo | Better Health</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+  <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
+</head>
 <body>
-<header>
-    <h1>Mock Page</h1>
-</header>
-<div class="container">
-    <div class="main-content">
-        <h2>mock</h2>
+
+  <nav class="navbar navbar-light bg-white py-3">
+    <div class="container d-flex justify-content-between align-items-center">
+      <a class="navbar-brand font-weight-bold text-primary" href="{% url 'home' %}">Better Health</a>
+      <a class="btn btn-outline-primary" href="{% url 'home' %}">Volver al Inicio</a>
     </div>
-</div>
+  </nav>
+
+  <section class="section text-center">
+    <div class="container">
+      <img src="{% static 'images/construction.svg' %}" alt="Página en construcción" style="max-width: 200px;" class="mb-4">
+      <h2>¡Estamos trabajando en ello!</h2>
+      <p>Esta funcionalidad no está disponible en este sprint, pero estará incluida en futuras versiones del sistema.</p>
+      <p>Gracias por tu comprensión.</p>
+      <a href="{% url 'home' %}" class="btn btn-primary mt-3">Ir a la página principal</a>
+    </div>
+  </section>
+
+  <footer class="footer bg-dark text-white text-center py-4 mt-5">
+    <div class="container">
+      <p class="mb-1">Better Health Clinic &copy; 2025</p>
+      <small>Desarrollado por Maria Azcona, Mohamed Largo & Marçal Piró</small>
+    </div>
+  </footer>
+
 </body>
-
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-        background-color: #f4f4f4;
-    }
-
-    .container {
-        max-width: 1200px;
-        margin: auto;
-        padding: 20px;
-    }
-
-    header {
-        background-color: #333;
-        color: #fff;
-        padding: 10px 0;
-        text-align: center;
-    }
-
-    .main-content {
-        padding: 20px;
-        background-color: #fff;
-        margin-top: 20px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
-
-    footer {
-        background-color: #333;
-        color: #fff;
-        text-align: center;
-        padding: 10px 0;
-        position: fixed;
-        width: 100%;
-        bottom: 0;
-    }
-</style>
 </html>
+

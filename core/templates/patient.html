@@ -2,14 +2,26 @@
 
 {% block content %}
 <div class="container">
-    <header>
-        <h1>Bienvenido, {{ user.username }}</h1>
+    <header class="section">
+        <h1 class="signup-title">Bienvenido, {{ user.username }}</h1>
         <p>¡Gracias por visitar nuestra clínica!</p>
     </header>
 
-    <div class="button-container">
-        <a href="{% url 'has_insurance' %}" class="btn">Reservar una cita</a>
-        <a href="{% url 'history' %}" class="btn">Área Personal</a>
+    <div class="grid">
+        <a href="{% url 'has_insurance' %}" class="card-link">
+          <div class="card">
+            <h3>Reservar una Cita</h3>
+            <p>Accede a nuestro sistema de reservas y agenda tu próxima visita.</p>
+          </div>
+        </a>
+
+        <a href="{% url 'history' %}" class="card-link">
+          <div class="card">
+            <h3>Área Personal</h3>
+            <p>Consulta tu historial de citas, datos personales y más.</p>
+          </div>
+        </a>
+
     </div>
 
     {% if appointment %}
@@ -23,6 +35,7 @@
     {% endif %}
 </div>
 {% endblock %}
+
 
 
 
