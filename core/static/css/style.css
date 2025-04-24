@@ -170,6 +170,11 @@ body {
   color: #34495e;
 }
 
+.card {
+  border: 2px solid #2c3e50;
+}
+
+
 .icon {
   font-size: 36px;
   margin-bottom: 10px;
