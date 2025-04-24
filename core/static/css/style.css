@@ -1,8 +1,21 @@
 
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+html, body {
+  height: 100%;
   margin: 0;
   padding: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex: 1;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: #ffffff;
   color: #333;
 }
@@ -249,10 +262,10 @@ form button.btn2:hover {
 
 
 .footer {
-  margin-bottom: 0;
   background-color: #1c1f24;
   font-size: 20px;
   color: #ffffff;
+  padding: 20px 0;
 }
 
 .footer small {
