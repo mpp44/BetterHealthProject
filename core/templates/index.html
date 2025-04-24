@@ -1,17 +1,146 @@
 {% extends "base.html" %}
-
 {% block content %}
-<div class="container">
-    <header>
+
+
+<section class="hero-carousel">
+  <div class="carousel">
+    <div class="carousel-item active" style="background-image: url('/static/images/carousel/slide1.jpg');">
+      <div class="carousel-content">
         <h1>Welcome to BETTER HEALTH</h1>
-        <p>Thank you for visiting our center!</p>
-    </header>
-
-    <div class="button-container">
+        <p>Your trusted private clinic for personalized care</p>
         <a href="{% url 'patient' %}" class="btn">Log In</a>
-        <a href="{% url 'mock' %}" class="btn">Sprint 2</a>
+        <a href="{% url 'mock' %}" class="btn">Private Clinical Area</a>
+      </div>
     </div>
+    <div class="carousel-item" style="background-image: url('/static/images/carousel/slide2.jpg');">
+      <div class="carousel-content">
+        <h1>Professional Medical Staff</h1>
+        <p>Our experts provide top-notch medical assistance</p>
+        <a href="{% url 'patient' %}" class="btn">Log In</a>
+        <a href="{% url 'mock' %}" class="btn">Private Clinical Area</a>
+      </div>
+    </div>
+    <div class="carousel-item" style="background-image: url('/static/images/carousel/slide3_1.jpg');">
+      <div class="carousel-content">
+        <h1>Advanced Technology</h1>
+        <p>Equipped with modern diagnostic and treatment tools</p>
+        <a href="{% url 'patient' %}" class="btn">Log In</a>
+        <a href="{% url 'mock' %}" class="btn">Private Clinical Area</a>
+      </div>
+    </div>
+    <div class="carousel-item" style="background-image: url('/static/images/carousel/slide4_1.jpg');">
+      <div class="carousel-content">
+        <h1>Comfort & Care</h1>
+        <p>We ensure a comfortable and compassionate environment</p>
+        <a href="{% url 'patient' %}" class="btn">Log In</a>
+        <a href="{% url 'mock' %}" class="btn">Private Clinical Area</a>
+      </div>
+    </div>
+    <button class="carousel-btn prev">&#10094;</button>
+    <button class="carousel-btn next">&#10095;</button>
+  </div>
+</section>
 
-</div>
+<section class="about-us section">
+  <div class="container">
+    <h2>About Us</h2>
+    <p>We are a team of passionate healthcare professionals committed to providing top-tier medical services in a friendly, welcoming environment. Our clinic stands for excellence, innovation, and patient-centered care.</p>
+  </div>
+</section>
+
+<section class="services section">
+  <div class="container">
+    <h2>Our Services</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>Emergency Help</h3>
+        <p>Immediate and reliable emergency assistance available 24/7.</p>
+      </div>
+      <div class="card">
+        <h3>Enriched Pharmacy</h3>
+        <p>Wide range of medicines and health products on-site.</p>
+      </div>
+      <div class="card">
+        <h3>Medical Treatment</h3>
+        <p>Comprehensive treatments tailored to individual patient needs.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="treatments section">
+  <div class="container">
+    <h2>Our Treatments</h2>
+    <div class="grid treatments-grid">
+      <div class="treatment-card">
+        <i class="icon">🩺</i>
+        <h4>Cardiology</h4>
+        <p>Heart diagnostics and treatments.</p>
+      </div>
+      <div class="treatment-card">
+        <i class="icon">🧠</i>
+        <h4>Neurology</h4>
+        <p>Expert care for neurological disorders.</p>
+      </div>
+      <div class="treatment-card">
+        <i class="icon">🦴</i>
+        <h4>Orthopedics</h4>
+        <p>Bone and joint care services.</p>
+      </div>
+      <div class="treatment-card">
+        <i class="icon">👶</i>
+        <h4>Pediatrics</h4>
+        <p>Dedicated care for children’s health.</p>
+      </div>
+      <div class="treatment-card">
+        <i class="icon">🦷</i>
+        <h4>Dentistry</h4>
+        <p>Comprehensive dental treatments.</p>
+      </div>
+      <div class="treatment-card">
+        <i class="icon">👁️</i>
+        <h4>Ophthalmology</h4>
+        <p>Vision and eye health services.</p>
+      </div>
+    </div>
+    <p class="more-treatments">...and more</p>
+  </div>
+</section>
+
+<section class="clinic-stats section">
+  <div class="container">
+    <h2>Clinic in Numbers</h2>
+    <div class="grid stats-grid">
+      <div class="stat">
+        <h3>20+</h3>
+        <p>Specialist Doctors</p>
+      </div>
+      <div class="stat">
+        <h3>50+</h3>
+        <p>Private Rooms</p>
+      </div>
+      <div class="stat">
+        <h3>10+</h3>
+        <p>Years of Experience</p>
+      </div>
+      <div class="stat">
+        <h3>5000+</h3>
+        <p>Happy Patients</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="contact section">
+  <div class="container">
+    <h2>Contact Us</h2>
+    <form>
+      <input type="text" placeholder="Your Name" required>
+      <input type="email" placeholder="Your Email" required>
+      <textarea placeholder="Your Message" rows="5" required></textarea>
+      <button type="submit" class="btn2">Send Message</button>
+    </form>
+  </div>
+</section>
+
 {% endblock %}
-
