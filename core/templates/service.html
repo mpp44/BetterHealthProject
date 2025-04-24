@@ -12,9 +12,9 @@
                     <div class="card">
                         <div class="card-body text-center">
                             <h5 class="card-title">{{ service.name }}</h5>
-                            <p class="card-text mb-1">{{ service.description }}</p>
-                            <p class="card-text mb-1">Precio: {{ service.price }}€</p>
-                            <p class="card-text mb-1">Incluido en Mútua: {{ service.insurance|yesno:"Sí,No" }}</p>
+                            <p class="card-text">{{ service.description }}</p>
+                            <p class="card-text">Precio: {{ service.price }}€</p>
+                            <p class="card-text">Incluido en Mútua: {{ service.insurance|yesno:"Sí,No" }}</p>
                             <p class="card-text">Duración: {{ service.duration }} minutos</p>
                             <a href="{% url 'select_service' service.id %}">Seleccionar</a>
                         </div>
