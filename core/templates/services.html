@@ -11,17 +11,16 @@
                 <div class="col-md-4 mb-4">
                     <div class="card">
                         <div class="card-body text-center">
-                            <h5 class="card-title">{{ service.name }}</h5>
-                            <p class="card-text mb-1">{{ service.description }}</p>
-                            <p class="card-text mb-1">Precio: {{ service.price }}€</p>
-                            <p class="card-text mb-1">Incluido en Mútua: {{ service.insurance|yesno:"Sí,No" }}</p>
-                            <p class="card-text">Duración: {{ service.duration }} minutos</p>
-                            <a href="{% url 'select_service' service.id %}">Seleccionar</a>
+                            <h5 class="card-title">{{ service.nombre }}</h5>
+                            <p class="card-text mb-1">{{ service.descripcion }}</p>
+                            <p class="card-text mb-1">Tipo de servicio: {{ service.tipo_servicio }}</p>
+                            <p class="card-text mb-1">Precio: {{ service.precio }}€</p>
+                            <p class="card-text mb-1">Incluido en Mútua: {{ service.incluido_mutua|yesno:"Sí,No" }}</p>
+                            <p class="card-text">Duración: {{ service.duracion_minutos }} minutos</p>
+                            <a href="{% url 'select_service' service.nombre %}">Seleccionar</a>
                         </div>
                     </div>
                 </div>
-
-
             {% empty %}
                 <li class="list-group-item list-group-item-warning text-muted text-center mx-auto mt-5">No hay servicios
                     disponibles.

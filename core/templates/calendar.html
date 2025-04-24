@@ -11,8 +11,7 @@
         <div class="col-md-4 mb-4">
             <div class="card">
                 <div class="card-body text-center">
-                    <h5 class="card-title">{{ schedule.service.name }}</h5>
-                    <p class="card-text">Día: {{ schedule.day }}</p>
+                    <p class="card-text">Día: {{ schedule.get_weekday_display }}</p>
                     <p class="card-text">Hora: {{ schedule.time|time:"H:i" }}</p>
                     <a href="{% url 'select_schedule' schedule.id%}">Seleccionar</a>
                 </div>

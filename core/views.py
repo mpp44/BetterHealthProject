@@ -4,6 +4,8 @@ from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
 from .models import Service, Appointment, Schedule
 from datetime import datetime, timedelta
+from .api import *
+from django.http import HttpResponse
 
 
 def home(request):
@@ -49,51 +51,72 @@ def update_appointment(request):
         appointment.insurance = True
         appointment.save()
 
-    return redirect('service')
+    return redirect('services')
 
 
-def service(request):
+def services(request):
+    token = get_token()
+
+    services_list = get_services(token)
+
+    for service in services_list:
+        Service.objects.update_or_create(
+            name=service["nombre"],
+            defaults={
+                "description": service["descripcion"],
+                "type": service["tipo_servicio"],
+                "price": service.get("precio", 0),
+                "insurance": service["incluido_mutua"],
+                "duration": int(service.get("duracion_minutos", 0)),
+                "authorization": False,
+            }
+        )
+
+    # Mock Schedules for One Service
+    consulta = Service.objects.get(name="Consulta médica general")
+    schedules = [
+        {"weekday": 0, "time": "10:00:00"},
+        {"weekday": 0, "time": "14:00:00"},
+        {"weekday": 2, "time": "10:00:00"},
+        {"weekday": 2, "time": "14:00:00"},
+        {"weekday": 4, "time": "10:00:00"},
+    ]
+
+    for schedule in schedules:
+        Schedule.objects.get_or_create(
+            service=consulta,
+            weekday=schedule["weekday"],
+            time=schedule["time"],
+            defaults={"available": True}
+        )
+
     appointment = Appointment.objects.filter(user=request.user).last()
-    if appointment.insurance is False:
-        services = Service.objects.filter(insurance=False)
-    else:
-        services = Service.objects.all()
-    return render(request, "service.html", {"services": services})
+    if not appointment.insurance:
+        services_list = [
+            s for s in services_list if not s.get("incluido_mutua")
+        ]
+
+    return render(request, "services.html", {"services": services_list})
 
 
-def select_service(request, service_id):
-    service = get_object_or_404(Service, id=service_id)
+def select_service(request, service_name):
+    service = Service.objects.get(name=service_name)
+
     appointment = Appointment.objects.filter(user=request.user).last()
-
     appointment.service = service
     appointment.save()
 
     schedules = Schedule.objects.filter(service=service, available=True)
-    upcoming_slots = generate_upcoming_slots(schedules)
-    return render(request, "calendar.html", {"schedules": upcoming_slots})
-
-
-def generate_upcoming_slots(schedules):
-    slots = []
-    for schedule in schedules:
-        dt = datetime.combine(datetime.today(), schedule.time)
-        slots.append({
-            "id": schedule.id,
-            "service_name": schedule.service.name,
-            "time": dt.time(),
-            "day": schedule.get_weekday_display(),
-            "start": dt.isoformat(),
-        })
-    return slots
+    return render(request, "calendar.html", {"schedules": schedules})
 
 
 def select_schedule(request, schedule_id):
-    schedule = get_object_or_404(Schedule, id=schedule_id)
+    schedule = Schedule.objects.get(id=schedule_id)
 
     appointment_id = request.session.pop('editing_appointment_id', None)
 
     if appointment_id:
-        appointment = get_object_or_404(Appointment, id=appointment_id, user=request.user)
+        appointment = Appointment.objects.get(id=appointment_id, user=request.user)
         appointment.schedule.available = True
         appointment.schedule.save()
     else:
@@ -125,6 +148,5 @@ def delete_appointment(request, appointment_id):
 def edit_appointment(request, appointment_id):
     appointment = get_object_or_404(Appointment, id=appointment_id)
     schedules = Schedule.objects.filter(service=appointment.service, available=True)
-    upcoming_slots = generate_upcoming_slots(schedules)
     request.session['editing_appointment_id'] = appointment.id
-    return render(request, 'calendar.html', {'schedules': upcoming_slots})
+    return render(request, 'calendar.html', {'schedules': schedules})
