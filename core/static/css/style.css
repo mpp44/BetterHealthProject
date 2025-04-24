@@ -105,6 +105,18 @@ body {
   cursor: pointer;
 }
 
+.carousel-content #clinical-area-btn {
+  background-color: #fff;
+  color: #2c3e50;
+  border: 2px solid #2c3e50;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.carousel-content #clinical-area-btn:hover {
+  background-color: #2c3e50;
+  color: #fff;
+}
+
 .carousel-content .btn:hover {
   background-color: #34495e;
 }
@@ -232,6 +244,7 @@ form button.btn2:hover {
 
 
 .footer {
+  margin-bottom: 0;
   background-color: #1c1f24;
   font-size: 20px;
   color: #ffffff;
@@ -246,4 +259,12 @@ form button.btn2:hover {
 .container .mb-1{
     font-weight: bold;
     color: #ffffff;
+}
+
+.signup-title{
+  font-size: 38px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  color: #2c3e50;
+  font-weight: bold;
 }
