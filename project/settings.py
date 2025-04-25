@@ -28,7 +28,7 @@ DEBUG = True
 ALLOWED_HOSTS = ["https://betterhealthproject-cf86.onrender.com","*"]
 CSRF_TRUSTED_ORIGINS = ["https://betterhealthproject-cf86.onrender.com"]
 
-CSRF_TRUSTED_ORIGINS = ["https://betterhealthproject-w1tc.onrender.com"]
+CSRF_TRUSTED_ORIGINS = ["*"]
 
 # Application definition
 
