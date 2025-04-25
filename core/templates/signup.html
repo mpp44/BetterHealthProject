@@ -4,7 +4,7 @@
 <div class="container d-flex justify-content-center align-items-center">
     <div class="card2">
 
-        <h1 class="signup-title">Create an Account</h1>
+        <h1 class="signup-title">Crear una cuenta</h1>
 
 
         <form method="post">
@@ -13,15 +13,16 @@
                 {{ form.as_p }}
             </div>
             <div class="text-center">
-                <button type="submit" class="btn btn2 w-50">Sign Up</button>
+                <button type="submit" class="btn btn2 w-50">Registrarse</button>
             </div>
         </form>
 
         <p class="text-center mt-3">
-            Already have an account? <a href="{% url 'login' %}" class="text-decoration-none">Log in here</a>
+            ¿Ya tienes una cuenta? <a href="{% url 'login' %}" class="text-decoration-none">Inicie sesión aquí</a>
         </p>
     </div>
 </div>
 {% endblock %}
+
 
 
