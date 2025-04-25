@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-c$$szepoq3q(5j(de6o8qur-ab5c#yn(n#_k&ehyq%d80^)ujq'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ["https://betterhealthproject-cf86.onrender.com","*"]
 
