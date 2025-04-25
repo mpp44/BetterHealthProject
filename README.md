@@ -12,35 +12,30 @@ git clone https://github.com/mpp44/BetterHealthProject.git
 cd BetterHealthProject
 ```
 
-### 2. Set up the database example data
-This project uses example services and schedules models sourced from the JSON files catalogo_servicios.json and horarios.json:
-
-```bash
-python manage.py import_services
-python manage.py import_schedules
-```
-
-If you want to delete all data:
-```bash
-python manage.py delete_all
-```
-
-### 3. Build Docker Image
+### 2. Build Docker Image
 
 ```bash
 docker-compose build
 ```
 
-### 4. Start Docker Container
+### 3. Start Docker Container
 
 ```bash
 docker-compose up
 ```
 Server will be running on: http://127.0.0.1:8000/
 
-### 5. Create a superuser (optional)
+### 4. Create a superuser (optional)
 
 ```bash
 python manage.py createsuperuser
 ```
 You can access Django’s admin panel at: http://127.0.0.1:8000/admin/
+
+## Run project in remote
+
+### You can also view the functionalities online following the next link (project deployed in render.com):
+
+```
+https://betterhealthproject-w1tc.onrender.com
+```
