@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <header class="section">
+        <h1 class="signup-title">¿Tiene Mútua?</h1>
+    </header>
+
+     <div class="grid">
+        <a href="{% url 'update_appointment' %}" class="card-link">
+          <div class="card">
+            <h3>SÍ</h3>
+          </div>
+        </a>
+        <a href="{% url 'services' %}" class="card-link">
+          <div class="card">
+            <h3>NO</h3>
+          </div>
+        </a>
+    </div>
+
+</div>
+{% endblock %}

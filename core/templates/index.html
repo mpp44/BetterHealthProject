@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% block content %}
+
+
+<section class="hero-carousel">
+  <div class="carousel">
+    <div class="carousel-item active" style="background-image: url('/static/images/carousel/slide1.jpg');">
+      <div class="carousel-content">
+        <h1>Bienvenido a BETTER HEALTH</h1>
+        <p>Tu clínica privada de confianza para una atención personalizada</p>
+        <a href="{% url 'patient' %}" class="btn">Iniciar Sesión</a>
+        <a href="{% url 'mock' %}" class="btn" id="clinical-area-btn">Área Clínica Privada</a>
+      </div>
+    </div>
+    <div class="carousel-item" style="background-image: url('/static/images/carousel/slide2.jpg');">
+      <div class="carousel-content">
+        <h1>Personal médico profesional</h1>
+        <p>Nuestros expertos brindan asistencia médica de primer nivel.</p>
+        <a href="{% url 'patient' %}" class="btn">Iniciar Sesión</a>
+        <a href="{% url 'mock' %}" class="btn" id="clinical-area-btn">Área Clínica Privada</a>
+      </div>
+    </div>
+    <div class="carousel-item" style="background-image: url('/static/images/carousel/slide3_1.jpg');">
+      <div class="carousel-content">
+        <h1>Tecnología avanzada</h1>
+        <p>Equipado con modernas herramientas de diagnóstico y tratamiento.</p>
+        <a href="{% url 'patient' %}" class="btn">Iniciar Sesión</a>
+        <a href="{% url 'mock' %}" class="btn" id="clinical-area-btn">Área Clínica Privada</a>
+      </div>
+    </div>
+    <div class="carousel-item" style="background-image: url('/static/images/carousel/slide4_1.jpg');">
+      <div class="carousel-content">
+        <h1>Comodidad y cuidado</h1>
+        <p>Garantizamos un ambiente cómodo y compasivo.</p>
+        <a href="{% url 'patient' %}" class="btn">Iniciar Sesión</a>
+        <a href="{% url 'mock' %}" class="btn" id="clinical-area-btn">Área Clínica Privada</a>
+      </div>
+    </div>
+    <button class="carousel-btn prev">&#10094;</button>
+    <button class="carousel-btn next">&#10095;</button>
+  </div>
+</section>
+
+<section class="about-us section">
+  <div class="container">
+    <h2>Sobre nosotros</h2>
+    <p>Somos un equipo de profesionales de la salud apasionados, comprometidos con brindar servicios médicos de primer nivel en un ambiente agradable y acogedor. Nuestra clínica se distingue por la excelencia, la innovación y la atención centrada en el paciente.</p>
+  </div>
+</section>
+
+<section class="services section">
+  <div class="container">
+    <h2>Nuestros servicios</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>Ayuda de emergencia</h3>
+        <p>Asistencia de emergencia inmediata y confiable disponible 24 horas al día, 7 días a la semana.</p>
+      </div>
+      <div class="card">
+        <h3>Farmacia enriquecida</h3>
+        <p>Amplia gama de medicamentos y productos de salud en el sitio.</p>
+      </div>
+      <div class="card">
+        <h3>Tratamiento médico</h3>
+        <p>Tratamientos integrales adaptados a las necesidades individuales de cada paciente.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="treatments section">
+  <div class="container">
+    <h2>Nuestros Tratamientos</h2>
+    <div class="grid treatments-grid">
+      <div class="treatment-card">
+        <i class="icon">🩺</i>
+        <h4>Cardiología</h4>
+        <p>Diagnóstico y tratamientos del corazón.</p>
+      </div>
+      <div class="treatment-card">
+        <i class="icon">🧠</i>
+        <h4>Neurología</h4>
+        <p>Atención experta para trastornos neurológicos.</p>
+      </div>
+      <div class="treatment-card">
+        <i class="icon">🦴</i>
+        <h4>Ortopedía</h4>
+        <p>Servicios de cuidado de huesos y articulaciones.</p>
+      </div>
+      <div class="treatment-card">
+        <i class="icon">👶</i>
+        <h4>Pediatría</h4>
+        <p>Atención dedicada a la salud infantil.</p>
+      </div>
+      <div class="treatment-card">
+        <i class="icon">🦷</i>
+        <h4>Odontología</h4>
+        <p>Tratamientos dentales integrales.</p>
+      </div>
+      <div class="treatment-card">
+        <i class="icon">👁️</i>
+        <h4>Oftalmología</h4>
+        <p>Servicios de visión y salud ocular.</p>
+      </div>
+    </div>
+    <p class="more-treatments">...</p>
+  </div>
+</section>
+
+<section class="clinic-stats section">
+  <div class="container">
+    <h2>Clínica en números</h2>
+    <div class="grid stats-grid">
+      <div class="stat">
+        <h3>20+</h3>
+        <p>Médicos especialistas</p>
+      </div>
+      <div class="stat">
+        <h3>50+</h3>
+        <p>Habitaciones privadas</p>
+      </div>
+      <div class="stat">
+        <h3>10+</h3>
+        <p>Años de experiencia</p>
+      </div>
+      <div class="stat">
+        <h3>5000+</h3>
+        <p>Pacientes felices</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="contact section">
+  <div class="container">
+    <h2>Contacta con nosotros</h2>
+    <form>
+      <input type="text" placeholder="Su Nombre" required>
+      <input type="email" placeholder="Su Email" required>
+      <textarea placeholder="Su Mensaje" rows="5" required></textarea>
+      <button type="submit" class="btn2">Enviar mail</button>
+    </form>
+  </div>
+</section>
+
+{% endblock %}

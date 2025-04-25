@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <header class="section">
+        <h1 class="signup-title">Bienvenido, {{ user.username }}</h1>
+        <p>¡Gracias por visitar nuestra clínica!</p>
+    </header>
+
+    <div class="grid">
+        <a href="{% url 'has_insurance' %}" class="card-link">
+          <div class="card">
+            <h3>Reservar una Cita</h3>
+            <p>Accede a nuestro sistema de reservas y agenda tu próxima visita.</p>
+          </div>
+        </a>
+
+        <a href="{% url 'history' %}" class="card-link">
+          <div class="card">
+            <h3>Área Personal</h3>
+            <p>Consulta tu historial de citas, datos personales y más.</p>
+          </div>
+        </a>
+
+    </div>
+
+    {% if appointment %}
+    <script>
+        var message = 'Cita reservada correctamente para {{ appointment.service.name }}\n\n' +
+            'Duración: {{ appointment.service.duration }} minutos\n' +
+            'Precio: {{ appointment.service.price }}€\n' +
+            'Mutua: {{ appointment.insurance|yesno:"Sí,No" }}';
+        alert(message);
+    </script>
+    {% endif %}
+</div>
+{% endblock %}
+
+
+
+

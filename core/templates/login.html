@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Log In{% endblock %}
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center">
+    <div class="card2">
+
+        <h1 class="signup-title">Iniciar sesión con una cuenta existente</h1>
+
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                {{ form.as_p }}
+            </div>
+            <div class="text-center">
+                <button type="submit" class="btn btn2 w-50">Iniciar sesión</button>
+            </div>
+        </form>
+
+        <p class="text-center mt-3">
+            ¿No tienes una cuenta? <a href="{% url 'signup' %}" class="text-decoration-none">Regístrate aquí</a>
+        </p>
+    </div>
+</div>
+{% endblock %}
+
