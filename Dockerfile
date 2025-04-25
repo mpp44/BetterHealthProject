@@ -10,5 +10,6 @@ RUN pip install poetry && poetry config virtualenvs.create false && poetry insta
 
 COPY . /app/
 RUN chmod +x /app/entrypoint.sh
+EXPOSE 8000
 
 ENTRYPOINT ["/app/entrypoint.sh"]
