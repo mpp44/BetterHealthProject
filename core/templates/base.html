@@ -16,10 +16,10 @@
       {% if user.is_authenticated %}
       <form method="post" action="{% url 'logout' %}">
         {% csrf_token %}
-        <button type="submit" class="btn btn-outline-primary ml-2">Log Out</button>
+        <button type="submit" class="btn btn-outline-primary ml-2">Abandonar Sesión</button>
       </form>
       {% else %}
-      <a class="btn btn-primary" href="{% url 'signup' %}">Sign Up</a>
+      <a class="btn btn-primary" href="{% url 'signup' %}">Registrarse</a>
       {% endif %}
     </div>
   </nav>
