@@ -2,8 +2,14 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    numero_afiliado = models.CharField(max_length=50, blank=True, null=True)
+    fecha_nacimiento = models.DateField(blank=True, null=True)
 
-# Create your models here.
+    def __str__(self):
+        return f"Perfil de {self.user.username}"
+
 
 class Appointment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -45,4 +51,3 @@ class Schedule(models.Model):
 
     def __str__(self):
         return f"{self.get_weekday_display()} at {self.time} - {self.service.name}"
-

@@ -10,6 +10,7 @@ API_PASSWORD = os.getenv("API_PASSWORD")
 
 TOKEN_URL = f"{API_BASE_URL}/token"
 SERVICES_URL = f"{API_BASE_URL}/servicios-clinica"
+CHECK_PATIENT_URL = f"{API_BASE_URL}/pacientes/verificar"
 
 
 def get_token():
@@ -26,7 +27,6 @@ def get_token():
 
 def get_services(token):
     headers = {"Authorization": f"Bearer {token}"}
-
     response = requests.get(SERVICES_URL, headers=headers)
 
     if response.status_code == 200:
@@ -34,3 +34,26 @@ def get_services(token):
     else:
         raise Exception(f"Cannot get services: {response.status_code} - {response.text}")
 
+
+def verify_insurance(token, afiliado):
+    headers = {"Authorization": f"Bearer {token}"}
+    response = requests.get(f"{CHECK_PATIENT_URL}/{afiliado}", headers=headers)
+
+    if response.status_code == 200:
+        return True
+    elif response.status_code == 422:
+        return False
+    else:
+        raise Exception(f"Error verifying insurance: {response.status_code} - {response.text}")
+
+
+def get_patients(token):
+    headers = {"Authorization": f"Bearer {token}"}
+    url = f"{API_BASE_URL}/pacientes/"
+
+    response = requests.get(url, headers=headers)
+
+    if response.status_code == 200:
+        return response.json()
+    else:
+        raise Exception(f"Error fetching patients: {response.status_code} - {response.text}")

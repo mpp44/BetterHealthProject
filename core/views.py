@@ -1,11 +1,11 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login
-from django.contrib.auth.forms import UserCreationForm
-from .models import Service, Appointment, Schedule
+from .models import Service, Appointment, Schedule, UserProfile
 from datetime import datetime, timedelta
 from .api import *
 from django.http import HttpResponse
+from .forms import CustomUserCreationForm
 
 
 def home(request):
@@ -14,7 +14,7 @@ def home(request):
 
 def signup(request):
     if request.method == "POST":
-        form = UserCreationForm(request.POST)
+        form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
@@ -22,12 +22,18 @@ def signup(request):
         else:
             return render(request, 'signup.html', {'form': form})
     else:
-        form = UserCreationForm()
+        form = CustomUserCreationForm()
     return render(request, 'signup.html', {'form': form})
 
 
 def mock(request):
     return render(request, 'mock.html')
+
+
+def patients_list(request):
+    token = get_token()
+    patients = get_patients(token)
+    return render(request, "patients_list.html", {"patients": patients})
 
 
 @login_required(login_url='login')
@@ -40,15 +46,24 @@ def patient(request):
 
 
 def has_insurance(request):
-    Appointment.objects.create(user=request.user)
-    return render(request, "has_insurance.html")
+    if Appointment.objects.filter(user=request.user).count() >= 3:
+        return render(request, 'make_appointment_error_message.html')
+
+    else:
+        Appointment.objects.create(user=request.user)
+        return render(request, "has_insurance.html")
 
 
-def update_appointment(request):
+def check_insurance(request):
+    token = get_token()
+    user_profile = UserProfile.objects.filter(user=request.user).last()
+    afiliado = user_profile.numero_afiliado
+    pertenece = verify_insurance(token, afiliado)
+
     appointment = Appointment.objects.filter(user=request.user).last()
 
     if appointment:
-        appointment.insurance = True
+        appointment.insurance = pertenece
         appointment.save()
 
     return redirect('services')
@@ -72,6 +87,8 @@ def services(request):
             }
         )
 
+    services_db = Service.objects.all()
+
     # Mock Schedules for One Service
     consulta = Service.objects.get(name="Consulta médica general")
     schedules = [
@@ -92,11 +109,11 @@ def services(request):
 
     appointment = Appointment.objects.filter(user=request.user).last()
     if not appointment.insurance:
-        services_list = [
-            s for s in services_list if not s.get("incluido_mutua")
-        ]
+        services_db = [s for s in services_db if not s.insurance]
+    else:
+        services_db = [s for s in services_db if s.insurance]
 
-    return render(request, "services.html", {"services": services_list})
+    return render(request, "services.html", {"services": services_db})
 
 
 def select_service(request, service_name):
@@ -150,3 +167,8 @@ def edit_appointment(request, appointment_id):
     schedules = Schedule.objects.filter(service=appointment.service, available=True)
     request.session['editing_appointment_id'] = appointment.id
     return render(request, 'calendar.html', {'schedules': schedules})
+
+
+@login_required(login_url='login')
+def private(request):
+    return render(request, "private.html")
