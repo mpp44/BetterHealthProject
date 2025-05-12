@@ -2,10 +2,14 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login
 from .models import Service, Appointment, Schedule, UserProfile
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time
 from .api import *
 from django.http import HttpResponse
 from .forms import CustomUserCreationForm
+from zoneinfo import ZoneInfo
+from django.utils.timezone import make_aware
+import dateparser
+from django.core.exceptions import ObjectDoesNotExist
 
 
 def home(request):
@@ -69,6 +73,30 @@ def check_insurance(request):
     return redirect('services')
 
 
+def generate_schedules_for_all_services(s):
+    today = datetime.now(ZoneInfo("Europe/Madrid")).date()
+    start_date = today - timedelta(days=today.weekday())
+    end_date = start_date + timedelta(weeks=2)
+    slot_duration = timedelta(minutes=30)
+
+    for service in s:
+        current_date = start_date
+        while current_date <= end_date:
+            start_hour = time(9, 0)
+            end_hour = time(20, 0)
+            current_time = datetime.combine(current_date, start_hour)
+            current_time = make_aware(current_time, timezone=ZoneInfo("Europe/Madrid"))
+
+            while current_time.time() < end_hour:
+                Schedule.objects.get_or_create(
+                    service=service,
+                    datetime=current_time,
+                    defaults={"available": True}
+                )
+                current_time += slot_duration
+            current_date += timedelta(days=1)
+
+
 def services(request):
     token = get_token()
 
@@ -88,24 +116,7 @@ def services(request):
         )
 
     services_db = Service.objects.all()
-
-    # Mock Schedules for One Service
-    consulta = Service.objects.get(name="Consulta médica general")
-    schedules = [
-        {"weekday": 0, "time": "10:00:00"},
-        {"weekday": 0, "time": "14:00:00"},
-        {"weekday": 2, "time": "10:00:00"},
-        {"weekday": 2, "time": "14:00:00"},
-        {"weekday": 4, "time": "10:00:00"},
-    ]
-
-    for schedule in schedules:
-        Schedule.objects.get_or_create(
-            service=consulta,
-            weekday=schedule["weekday"],
-            time=schedule["time"],
-            defaults={"available": True}
-        )
+    generate_schedules_for_all_services(services_db)
 
     appointment = Appointment.objects.filter(user=request.user).last()
     if not appointment.insurance:
@@ -116,7 +127,7 @@ def services(request):
     return render(request, "services.html", {"services": services_db})
 
 
-def select_service(request, service_name):
+def select_service2(request, service_name):
     service = Service.objects.get(name=service_name)
 
     appointment = Appointment.objects.filter(user=request.user).last()
@@ -125,6 +136,55 @@ def select_service(request, service_name):
 
     schedules = Schedule.objects.filter(service=service, available=True)
     return render(request, "calendar.html", {"schedules": schedules})
+
+
+def select_service(request, service_name):
+    service = get_object_or_404(Service, name=service_name)
+
+    appointment = Appointment.objects.filter(user=request.user).last()
+    if appointment:
+        appointment.service = service
+        appointment.save()
+
+    today = datetime.now(ZoneInfo("Europe/Madrid")).date()
+    semana_str = request.GET.get("semana")
+
+    parsed = dateparser.parse(semana_str, languages=["es"]) if semana_str else None
+    semana_inicio = parsed.date() if parsed else today - timedelta(days=today.weekday())
+
+    semana_fin = semana_inicio + timedelta(days=4)
+
+    horarios = Schedule.objects.filter(
+        service=service,
+        available=True,
+        datetime__date__gte=semana_inicio,
+        datetime__date__lte=semana_fin
+    ).order_by("datetime")
+
+    horarios_por_dia = {}
+    for h in horarios:
+        fecha_obj = h.datetime.date()
+        horarios_por_dia.setdefault(fecha_obj, []).append(h)
+
+    semanas = []
+
+    # Si hoy es sábado o domingo, empieza desde el lunes próximo
+    hoy_es = today.weekday()  # 0 = lunes, 6 = domingo
+    inicio = today if hoy_es < 5 else today + timedelta(days=(7 - hoy_es))
+
+    # Genera las próximas 4 semanas a partir de ahí
+    for i in range(2):
+        fecha = inicio + timedelta(weeks=i)
+        lunes = fecha - timedelta(days=fecha.weekday())  # asegura que es lunes
+        semanas.append({"start": lunes})
+
+    return render(request, "calendar.html", {
+        "schedules": horarios,
+        "horarios_por_dia": horarios_por_dia,
+        "semanas": semanas,
+        "semana_seleccionada": semana_inicio.isoformat(),
+        "service": service
+    })
 
 
 def select_schedule(request, schedule_id):
@@ -148,7 +208,7 @@ def select_schedule(request, schedule_id):
 
 
 def history(request):
-    appointments = Appointment.objects.filter(user=request.user)
+    appointments = Appointment.objects.filter(user=request.user).order_by('schedule__datetime')
     return render(request, "history.html", {"appointments": appointments})
 
 

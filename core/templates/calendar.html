@@ -1,27 +1,44 @@
 {% extends "base.html" %}
+{% load tz %}
 
 {% block content %}
-<div class="container">
-    <header class="text-center my-4">
-        <h1  class="signup-title">Available Schedules</h1>
+<div class="container my-4">
+    <header class="text-center mb-4">
+        <h2 class="signup-title">Selecciona una cita para: <strong>{{ service.name }}</strong></h2>
     </header>
 
-    <div class="row">
-        {% for schedule in schedules %}
-        <div class="col-md-4 mb-4">
-            <div class="card">
-                <div class="card-body text-center">
-                    <p class="card-text">Día: {{ schedule.get_weekday_display }}</p>
-                    <p class="card-text">Hora: {{ schedule.time|time:"H:i" }}</p>
-                    <a href="{% url 'select_schedule' schedule.id%}">Seleccionar</a>
+    <!-- Selector de semana -->
+    <form method="get" class="text-center mb-4">
+        <label for="semana">Semana:</label>
+        <select name="semana" id="semana" class="form-select d-inline-block w-auto" onchange="this.form.submit()">
+            {% for semana in semanas %}
+                <option value="{{ semana.start }}" {% if semana.start|stringformat:"s" == semana_seleccionada %}selected{% endif %}>
+                    Semana del {{ semana.start|date:"d/m/Y" }}
+                </option>
+            {% endfor %}
+        </select>
+    </form>
+
+    <!-- Horarios agrupados por día -->
+    {% if horarios_por_dia %}
+        {% for fecha, horarios in horarios_por_dia.items %}
+        <div class="card mb-3">
+            <div class="card-header text-center bg-primary text-white">
+                {{ fecha|date:"l, d" }}
+            </div>
+            <div class="card-body d-flex flex-wrap justify-content-center">
+                {% for horario in horarios %}
+                <div class="m-2">
+                    <a href="{% url 'select_schedule' horario.id %}" class="btn btn-outline-success">
+                        {{ horario.datetime|time:"H:i" }}
+                    </a>
                 </div>
+                {% endfor %}
             </div>
         </div>
-        {% empty %}
-        <div class="col-12 text-center">
-            <p class="list-group-item-warning text-muted">No hay horarios disponibles</p>
-        </div>
         {% endfor %}
-    </div>
+    {% else %}
+        <p class="text-muted text-center">No hay horarios disponibles para esta semana.</p>
+    {% endif %}
 </div>
 {% endblock %}

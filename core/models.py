@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils.timezone import now
 
 
 class UserProfile(models.Model):
@@ -37,17 +38,9 @@ class Service(models.Model):
 
 class Schedule(models.Model):
     service = models.ForeignKey("Service", on_delete=models.CASCADE, null=True)
-    weekday = models.IntegerField(choices=[
-        (0, "Lunes"),
-        (1, "Martes"),
-        (2, "Miércoles"),
-        (3, "Jueves"),
-        (4, "Viernes"),
-        (5, "Sábado"),
-        (6, "Domingo"),
-    ])
-    time = models.TimeField()
+    datetime = models.DateTimeField(default=now)
     available = models.BooleanField(default=True)
 
     def __str__(self):
-        return f"{self.get_weekday_display()} at {self.time} - {self.service.name}"
+        return f"{self.datetime.strftime('%A %Y-%m-%d %H:%M')} - {self.service.name}"
+
