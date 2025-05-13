@@ -2,22 +2,43 @@
 
 {% block content %}
 <div class="container">
+
+   <div class="timeline-steps">
+        <div class="step completed">
+            <div class="step-circle"></div>
+            <span class="step-label">Datos personales</span>
+        </div>
+        <div class="step completed">
+            <div class="step-circle"></div>
+            <span class="step-label">Tipo de cita</span>
+        </div>
+        <div class="step current">
+            <div class="step-circle"></div>
+            <span class="step-label">Cobertura</span>
+        </div>
+        <div class="step future">
+            <div class="step-circle"></div>
+            <span class="step-label">Confirmación</span>
+        </div>
+    </div>
+
     <header class="section">
-        <h1 class="signup-title">¿Quiere Pedir un Servicio Incluido en su Mútua?</h1>
+        <h1 class="signup-title">Selecciona la cobertura médica:</h1>
     </header>
 
      <div class="grid">
         <a href="{% url 'check_insurance' %}" class="card-link">
           <div class="card">
-            <h3>SÍ</h3>
+            <h3>MÚTUA</h3>
           </div>
         </a>
         <a href="{% url 'services' %}" class="card-link">
           <div class="card">
-            <h3>NO</h3>
+            <h3>PARTICULAR</h3>
           </div>
         </a>
     </div>
 
 </div>
+
 {% endblock %}
