@@ -1,44 +1,55 @@
 {% extends "base.html" %}
-{% load tz %}
-
 {% block content %}
-<div class="container my-4">
-    <header class="text-center mb-4">
-        <h2 class="signup-title">Selecciona una cita para: <strong>{{ service.name }}</strong></h2>
-    </header>
+<div class="container mt-5">
+    <h2>Horarios para: {{ service.name }}</h2>
 
-    <!-- Selector de semana -->
-    <form method="get" class="text-center mb-4">
-        <label for="semana">Semana:</label>
-        <select name="semana" id="semana" class="form-select d-inline-block w-auto" onchange="this.form.submit()">
-            {% for semana in semanas %}
-                <option value="{{ semana.start }}" {% if semana.start|stringformat:"s" == semana_seleccionada %}selected{% endif %}>
-                    Semana del {{ semana.start|date:"d/m/Y" }}
-                </option>
-            {% endfor %}
-        </select>
+    <!-- Calendario -->
+    <form method="get" class="mb-3">
+        <label for="fecha">Selecciona una fecha:</label>
+        <input type="date"
+               name="fecha"
+               id="fecha"
+               class="form-control w-auto d-inline-block"
+               value="{{ fecha|date:'Y-m-d' }}"
+               min="{{ today|date:'Y-m-d' }}"
+               onchange="validarFecha(this)">
+        <small id="fecha-aviso" class="text-danger d-none">Selecciona un día laborable (lunes a viernes).</small>
     </form>
 
-    <!-- Horarios agrupados por día -->
-    {% if horarios_por_dia %}
-        {% for fecha, horarios in horarios_por_dia.items %}
-        <div class="card mb-3">
-            <div class="card-header text-center bg-primary text-white">
-                {{ fecha|date:"l, d" }}
-            </div>
-            <div class="card-body d-flex flex-wrap justify-content-center">
-                {% for horario in horarios %}
-                <div class="m-2">
-                    <a href="{% url 'select_schedule' horario.id %}" class="btn btn-outline-success">
-                        {{ horario.datetime|time:"H:i" }}
-                    </a>
-                </div>
+    {% if fecha %}
+        <h5 class="mt-3">Horarios disponibles para el {{ fecha|date:"l d/m/Y" }}</h5>
+
+        {% if horarios %}
+            <div class="d-flex flex-wrap gap-2 mt-3">
+                {% for hora in horarios %}
+                <form method="post" action="{% url 'preconfirm_booking' service.id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="fecha" value="{{ fecha }}">
+                    <input type="hidden" name="hora" value="{{ hora }}">
+                    <button type="submit" class="btn btn-outline-success">{{ hora|time:"H:i" }}</button>
+                </form>
                 {% endfor %}
             </div>
-        </div>
-        {% endfor %}
-    {% else %}
-        <p class="text-muted text-center">No hay horarios disponibles para esta semana.</p>
+        {% else %}
+            <p class="text-muted">No hay horarios disponibles para este día.</p>
+        {% endif %}
     {% endif %}
 </div>
+
+<script>
+    function validarFecha(input) {
+        const aviso = document.getElementById("fecha-aviso");
+        const valor = input.value;
+        const seleccion = new Date(valor);
+        const dia = seleccion.getDay(); // 0 = domingo, 6 = sábado
+
+        if (dia === 0 || dia === 6) {
+            input.value = "";
+            aviso.classList.remove("d-none");
+        } else {
+            aviso.classList.add("d-none");
+            input.form.submit();
+        }
+    }
+</script>
 {% endblock %}

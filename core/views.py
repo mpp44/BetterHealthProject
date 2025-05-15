@@ -1,15 +1,20 @@
-from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login
-from .models import Service, Appointment, Schedule, UserProfile
-from datetime import datetime, timedelta, time
-from .api import *
 from django.http import HttpResponse
-from .forms import CustomUserCreationForm
-from zoneinfo import ZoneInfo
-from django.utils.timezone import make_aware
-import dateparser
 from django.core.exceptions import ObjectDoesNotExist
+
+# Modelos y formularios
+from .models import Service, Appointment, TempBooking, UserProfile  # ⬅️ Añade TempBooking si aún no está
+from .forms import CustomUserCreationForm
+from .api import *
+
+# Fechas y tiempos
+from datetime import datetime, timedelta, time
+from zoneinfo import ZoneInfo
+from django.utils.timezone import make_aware, now
+
+import dateparser
 
 
 def home(request):
@@ -42,10 +47,6 @@ def patients_list(request):
 
 @login_required(login_url='login')
 def patient(request):
-    appointments = Appointment.objects.filter(user=request.user)
-    for appointment in appointments:
-        if not appointment.schedule:
-            appointment.delete()
     return render(request, "patient.html", {"appointment": None})
 
 
@@ -54,7 +55,6 @@ def has_insurance(request):
         return render(request, 'make_appointment_error_message.html')
 
     else:
-        Appointment.objects.create(user=request.user)
         return render(request, "has_insurance.html")
 
 
@@ -62,142 +62,124 @@ def check_insurance(request):
     token = get_token()
     user_profile = UserProfile.objects.filter(user=request.user).last()
     afiliado = user_profile.numero_afiliado
-    pertenece = verify_insurance(token, afiliado)
+    verify_insurance(token, afiliado)
 
-    appointment = Appointment.objects.filter(user=request.user).last()
-
-    if appointment:
-        appointment.insurance = pertenece
-        appointment.save()
-
-    return redirect('services')
-
-
-def generate_schedules_for_all_services(s):
-    today = datetime.now(ZoneInfo("Europe/Madrid")).date()
-    start_date = today
-    end_date = start_date + timedelta(weeks=2)
-
-    for service in s:
-        current_date = start_date
-        slot_duration = timedelta(minutes=service.duration)
-
-        while current_date <= end_date:
-            if current_date < today:
-                current_date += timedelta(days=1)
-                continue
-
-            if current_date.weekday() < 5:
-                start_hour = time(9, 0)
-                end_hour = time(20, 0)
-                current_time = datetime.combine(current_date, start_hour)
-                current_time = make_aware(current_time, timezone=ZoneInfo("Europe/Madrid"))
-
-                while current_time.time() < end_hour:
-                    Schedule.objects.get_or_create(
-                        service=service,
-                        datetime=current_time,
-                        defaults={"available": True}
-                    )
-                    current_time += slot_duration
-            current_date += timedelta(days=1)
-    Schedule.objects.filter(datetime__lt=datetime.now(ZoneInfo("Europe/Madrid"))).delete()
+    return redirect('insurance_services')
 
 
 def services(request):
     services_db = Service.objects.all()
-    generate_schedules_for_all_services(services_db)
-
-    appointment = Appointment.objects.filter(user=request.user).last()
-    if not appointment.insurance:
-        services_db = [s for s in services_db if not s.insurance]
-    else:
-        services_db = [s for s in services_db if s.insurance]
+    services_db = [s for s in services_db if not s.insurance]
 
     return render(request, "services.html", {"services": services_db})
 
 
-def select_service2(request, service_name):
-    service = Service.objects.get(name=service_name)
+def insurance_services(request):
+    services_db = Service.objects.all()
+    services_db = [s for s in services_db if s.insurance]
 
-    appointment = Appointment.objects.filter(user=request.user).last()
-    appointment.service = service
-    appointment.save()
-
-    schedules = Schedule.objects.filter(service=service, available=True)
-    return render(request, "calendar.html", {"schedules": schedules})
+    return render(request, "services.html", {"services": services_db})
 
 
+@login_required
 def select_service(request, service_name):
     service = get_object_or_404(Service, name=service_name)
-
-    appointment = Appointment.objects.filter(user=request.user).last()
-    if appointment:
-        appointment.service = service
-        appointment.save()
-
+    fecha_str = request.GET.get("fecha")
+    horarios = []
+    fecha_obj = None
     today = datetime.now(ZoneInfo("Europe/Madrid")).date()
-    semana_str = request.GET.get("semana")
 
-    parsed = dateparser.parse(semana_str, languages=["es"]) if semana_str else None
-    semana_inicio = parsed.date() if parsed else today - timedelta(days=today.weekday())
+    if fecha_str:
+        try:
+            fecha_obj = datetime.strptime(fecha_str, "%Y-%m-%d").date()
 
-    semana_fin = semana_inicio + timedelta(days=4)
+            if fecha_obj >= today and fecha_obj.weekday() < 5:
+                start = datetime.combine(fecha_obj, time(9, 0), tzinfo=ZoneInfo("Europe/Madrid"))
+                end = datetime.combine(fecha_obj, time(20, 0), tzinfo=ZoneInfo("Europe/Madrid"))
+                intervalo = timedelta(minutes=service.duration)
 
-    horarios = Schedule.objects.filter(
-        service=service,
-        available=True,
-        datetime__date__gte=semana_inicio,
-        datetime__date__lte=semana_fin
-    ).order_by("datetime")
+                while start < end:
+                    hora = start.time()
+                    ya_reservada = Appointment.objects.filter(
+                        service=service, fecha=fecha_obj, hora=hora
+                    ).exists()
 
-    horarios_por_dia = {}
-    for h in horarios:
-        fecha_obj = h.datetime.date()
-        horarios_por_dia.setdefault(fecha_obj, []).append(h)
+                    temporalmente_reservada = TempBooking.objects.filter(
+                        service=service, fecha=fecha_obj, hora=hora
+                    ).exclude(user=request.user).exists()
 
-    semanas = []
+                    if not ya_reservada and not temporalmente_reservada:
+                        horarios.append(hora)
 
-    # Si hoy es sábado o domingo, empieza desde el lunes próximo
-    hoy_es = today.weekday()  # 0 = lunes, 6 = domingo
-    inicio = today if hoy_es < 5 else today + timedelta(days=(7 - hoy_es))
-
-    # Genera las próximas 4 semanas a partir de ahí
-    for i in range(2):
-        fecha = inicio + timedelta(weeks=i)
-        lunes = fecha - timedelta(days=fecha.weekday())  # asegura que es lunes
-        semanas.append({"start": lunes})
+                    start += intervalo
+        except ValueError:
+            fecha_obj = None
 
     return render(request, "calendar.html", {
-        "schedules": horarios,
-        "horarios_por_dia": horarios_por_dia,
-        "semanas": semanas,
-        "semana_seleccionada": semana_inicio.isoformat(),
-        "service": service
+        "service": service,
+        "fecha": fecha_obj,
+        "horarios": horarios,
+        "today": today,
     })
 
 
-def select_schedule(request, schedule_id):
-    schedule = Schedule.objects.get(id=schedule_id)
+@login_required
+def preconfirm_booking(request, service_id):
+    service = get_object_or_404(Service, id=service_id)
 
-    appointment_id = request.session.pop('editing_appointment_id', None)
+    if request.method == "POST":
+        fecha_str = request.POST.get("fecha")
+        fecha = dateparser.parse(fecha_str).date()
+        hora = request.POST.get("hora")
 
-    if appointment_id:
-        appointment = Appointment.objects.get(id=appointment_id, user=request.user)
-        appointment.schedule.available = True
-        appointment.schedule.save()
-    else:
-        appointment = Appointment.objects.filter(user=request.user).last()
+        if Appointment.objects.filter(service=service, fecha=fecha, hora=hora).exists():
+            return render(request, "error.html", {"mensaje": "Ese horario ya ha sido reservado."})
 
-    appointment.schedule = schedule
-    appointment.save()
+        TempBooking.objects.update_or_create(
+            user=request.user,
+            service=service,
+            fecha=fecha,
+            hora=hora,
+            defaults={'reserved_at': now()}
+        )
 
-    schedule.available = False
-    schedule.save()
-    return render(request, "patient.html", {"appointment": appointment})
+        return render(request, "confirm_booking.html", {
+            "service": service,
+            "fecha": fecha,
+            "hora": hora,
+            "precio": service.price
+        })
+
+    return redirect("services")
 
 
-def history(request):
+@login_required
+def confirm_booking(request, service_id):
+    service = get_object_or_404(Service, id=service_id)
+
+    if request.method == "POST":
+        fecha_str = request.POST.get("fecha")
+        fecha = dateparser.parse(fecha_str).date()
+        hora = request.POST.get("hora")
+
+        if Appointment.objects.filter(service=service, fecha=fecha, hora=hora).exists():
+            return render(request, "error.html", {"mensaje": "Otro usuario se ha adelantado a reservar esta hora."})
+
+        Appointment.objects.create(
+            user=request.user,
+            service=service,
+            fecha=fecha,
+            hora=hora
+        )
+
+        TempBooking.objects.filter(user=request.user, service=service, fecha=fecha, hora=hora).delete()
+
+        return redirect("patient")
+
+    return redirect("services")
+
+
+'''def history(request):
     appointments = Appointment.objects.filter(user=request.user).order_by('schedule__datetime')
     return render(request, "history.html", {"appointments": appointments})
 
@@ -216,9 +198,5 @@ def edit_appointment(request, appointment_id):
     appointment = get_object_or_404(Appointment, id=appointment_id)
     schedules = Schedule.objects.filter(service=appointment.service, available=True)
     request.session['editing_appointment_id'] = appointment.id
-    return render(request, 'calendar.html', {'schedules': schedules})
+    return render(request, 'calendar.html', {'schedules': schedules})'''
 
-
-@login_required(login_url='login')
-def private(request):
-    return render(request, "private.html")
