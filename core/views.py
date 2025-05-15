@@ -75,46 +75,36 @@ def check_insurance(request):
 
 def generate_schedules_for_all_services(s):
     today = datetime.now(ZoneInfo("Europe/Madrid")).date()
-    start_date = today - timedelta(days=today.weekday())
+    start_date = today
     end_date = start_date + timedelta(weeks=2)
-    slot_duration = timedelta(minutes=30)
 
     for service in s:
         current_date = start_date
-        while current_date <= end_date:
-            start_hour = time(9, 0)
-            end_hour = time(20, 0)
-            current_time = datetime.combine(current_date, start_hour)
-            current_time = make_aware(current_time, timezone=ZoneInfo("Europe/Madrid"))
+        slot_duration = timedelta(minutes=service.duration)
 
-            while current_time.time() < end_hour:
-                Schedule.objects.get_or_create(
-                    service=service,
-                    datetime=current_time,
-                    defaults={"available": True}
-                )
-                current_time += slot_duration
+        while current_date <= end_date:
+            if current_date < today:
+                current_date += timedelta(days=1)
+                continue
+
+            if current_date.weekday() < 5:
+                start_hour = time(9, 0)
+                end_hour = time(20, 0)
+                current_time = datetime.combine(current_date, start_hour)
+                current_time = make_aware(current_time, timezone=ZoneInfo("Europe/Madrid"))
+
+                while current_time.time() < end_hour:
+                    Schedule.objects.get_or_create(
+                        service=service,
+                        datetime=current_time,
+                        defaults={"available": True}
+                    )
+                    current_time += slot_duration
             current_date += timedelta(days=1)
+    Schedule.objects.filter(datetime__lt=datetime.now(ZoneInfo("Europe/Madrid"))).delete()
 
 
 def services(request):
-    token = get_token()
-
-    services_list = get_services(token)
-
-    for service in services_list:
-        Service.objects.update_or_create(
-            name=service["nombre"],
-            defaults={
-                "description": service["descripcion"],
-                "type": service["tipo_servicio"],
-                "price": service.get("precio", 0),
-                "insurance": service["incluido_mutua"],
-                "duration": int(service.get("duracion_minutos", 0)),
-                "authorization": False,
-            }
-        )
-
     services_db = Service.objects.all()
     generate_schedules_for_all_services(services_db)
 
