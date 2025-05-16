@@ -22,4 +22,9 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path("patients/", views.patients_list, name="patients_list"),
 
+    path('administration/', views.admin_login, name='admin_login'),
+    path('administration/dashboard/', views.admin_dashboard, name='admin_dashboard'),
+    path('administration/administrativo/', views.administrativo_dashboard, name='administrativo_dashboard'),
+    path('administration/financiero/', views.financiero_dashboard, name='financiero_dashboard'),
+    path('administration/logout/', views.admin_logout, name='admin_logout'),
 ]
