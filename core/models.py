@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.timezone import now
+from django.contrib.auth.hashers import make_password, check_password
 
 
 class UserProfile(models.Model):
@@ -43,6 +44,29 @@ class TempBooking(models.Model):
     hora = models.TimeField()
     reserved_at = models.DateTimeField(auto_now_add=True)
 
+
     def is_expired(self):
         from django.utils.timezone import now
         return now() > self.reserved_at + timedelta(minutes=1)
+
+
+class StaffUser(models.Model):
+    ROLE_CHOICES = [
+        ('superadmin', 'Super Administrador'),
+        ('admin', 'Administrativo'),
+        ('finance', 'Financiero'),
+    ]
+
+    username = models.CharField(max_length=150, unique=True)
+    password = models.CharField(max_length=128)
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES)
+
+    def set_password(self, raw_password):
+        self.password = make_password(raw_password)
+
+    def check_password(self, raw_password):
+        return check_password(raw_password, self.password)
+
+    def __str__(self):
+        return f"{self.username} ({self.role})"
+

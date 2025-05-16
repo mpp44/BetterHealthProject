@@ -1,10 +1,14 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login
+
 from django.http import HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
+from django.contrib import messages
+from .utils import staff_login_required, role_required
 
-from .models import Service, Appointment, TempBooking, UserProfile
+
+from .models import Service, Appointment, TempBooking, UserProfile, StaffUser
 from .forms import CustomUserCreationForm
 from .api import *
 
@@ -207,3 +211,70 @@ def edit_appointment(request, appointment_id):
     request.session["editing_appointment_id"] = appointment.id
 
     return redirect("select_service", service_name=appointment.service.name)
+
+def admin_login(request):
+    if request.method == "POST":
+        username = request.POST["username"]
+        password = request.POST["password"]
+        try:
+            user = StaffUser.objects.get(username=username)
+            if user.check_password(password):
+                request.session['staff_user_id'] = user.id
+                request.session['staff_user_role'] = user.role
+
+                if user.role == 'superadmin':
+                    return redirect('admin_dashboard')
+                elif user.role == 'admin':
+                    return redirect('administrativo_dashboard')
+                elif user.role == 'finance':
+                    return redirect('financiero_dashboard')
+            else:
+                messages.error(request, "Contraseña incorrecta.")
+        except StaffUser.DoesNotExist:
+            messages.error(request, "Usuario no encontrado.")
+    return render(request, 'administration/login.html')
+
+@staff_login_required
+@role_required('superadmin')
+def admin_dashboard(request):
+    return render(request, 'administration/admin_dashboard.html')
+
+@staff_login_required
+@role_required('admin')
+def administrativo_dashboard(request):
+    return render(request, 'administration/administrativo_dashboard.html')
+
+@staff_login_required
+@role_required('finance')
+def financiero_dashboard(request):
+    return render(request, 'administration/financiero_dashboard.html')
+
+@login_required(login_url='login')
+def private(request):
+    return render(request, "private.html")
+
+def admin_logout(request):
+    request.session.flush()
+    return redirect('admin_login')
+
+
+@staff_login_required
+@role_required('superadmin')
+def admin_dashboard(request):
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+        role = request.POST.get("role")
+
+        if role not in ['admin', 'finance']:
+            messages.error(request, "Rol inválido.")
+        elif StaffUser.objects.filter(username=username).exists():
+            messages.error(request, "El nombre de usuario ya existe.")
+        else:
+            new_user = StaffUser(username=username, role=role)
+            new_user.set_password(password)
+            new_user.save()
+            messages.success(request, f"Usuario '{username}' creado correctamente como {role}.")
+
+    return render(request, 'administration/admin_dashboard.html')
+
