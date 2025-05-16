@@ -1,9 +1,27 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="container mt-5">
+    <div class="timeline-steps">
+        <div class="step completed">
+            <div class="step-circle"></div>
+            <span class="step-label">Acción</span>
+        </div>
+        <div class="step completed">
+            <div class="step-circle"></div>
+            <span class="step-label">Cobertura</span>
+        </div>
+        <div class="step completed">
+            <div class="step-circle"></div>
+            <span class="step-label">Servicio</span>
+        </div>
+        <div class="step current">
+            <div class="step-circle"></div>
+            <span class="step-label">Fecha y Hora</span>
+        </div>
+    </div>
+
     <h2>Horarios para: {{ service.name }}</h2>
 
-    <!-- Calendario -->
     <form method="get" class="mb-3">
         <label for="fecha">Selecciona una fecha:</label>
         <input type="date"
@@ -17,22 +35,22 @@
     </form>
 
     {% if fecha %}
-        <h5 class="mt-3">Horarios disponibles para el {{ fecha|date:"l d/m/Y" }}</h5>
+    <h5 class="mt-3">Horarios disponibles para el {{ fecha|date:"l d/m/Y" }}</h5>
 
-        {% if horarios %}
-            <div class="d-flex flex-wrap gap-2 mt-3">
-                {% for hora in horarios %}
-                <form method="post" action="{% url 'preconfirm_booking' service.id %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="fecha" value="{{ fecha }}">
-                    <input type="hidden" name="hora" value="{{ hora }}">
-                    <button type="submit" class="btn btn-outline-success">{{ hora|time:"H:i" }}</button>
-                </form>
-                {% endfor %}
-            </div>
-        {% else %}
-            <p class="text-muted">No hay horarios disponibles para este día.</p>
-        {% endif %}
+    {% if horarios %}
+    <div class="d-flex flex-wrap gap-2 mt-3">
+        {% for hora in horarios %}
+        <form method="post" action="{% url 'preconfirm_booking' service.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="fecha" value="{{ fecha }}">
+            <input type="hidden" name="hora" value="{{ hora }}">
+            <button type="submit" class="btn btn-outline-success">{{ hora|time:"H:i" }}</button>
+        </form>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="text-muted">No hay horarios disponibles para este día.</p>
+    {% endif %}
     {% endif %}
 </div>
 
@@ -41,7 +59,7 @@
         const aviso = document.getElementById("fecha-aviso");
         const valor = input.value;
         const seleccion = new Date(valor);
-        const dia = seleccion.getDay(); // 0 = domingo, 6 = sábado
+        const dia = seleccion.getDay();
 
         if (dia === 0 || dia === 6) {
             input.value = "";

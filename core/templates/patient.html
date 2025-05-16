@@ -2,6 +2,25 @@
 
 {% block content %}
 <div class="container">
+    <div class="timeline-steps">
+        <div class="step current">
+            <div class="step-circle"></div>
+            <span class="step-label">Acción</span>
+        </div>
+        <div class="step future">
+            <div class="step-circle"></div>
+            <span class="step-label">Cobertura</span>
+        </div>
+        <div class="step future">
+            <div class="step-circle"></div>
+            <span class="step-label">Servicio</span>
+        </div>
+        <div class="step future">
+            <div class="step-circle"></div>
+            <span class="step-label">Fecha y Hora</span>
+        </div>
+    </div>
+
     <header class="section">
         <h1 class="signup-title">Bienvenido, {{ user.username }}</h1>
         <p>¡Gracias por visitar nuestra clínica!</p>
@@ -9,13 +28,18 @@
 
     <div class="grid">
         <a href="{% url 'has_insurance' %}" class="card-link">
-          <div class="card">
-            <h3>Reservar una Cita</h3>
-            <p>Accede a nuestro sistema de reservas y agenda tu próxima visita.</p>
-          </div>
+            <div class="card">
+                <h3>Reservar una Cita</h3>
+                <p>Accede a nuestro sistema de reservas y agenda tu próxima visita.</p>
+            </div>
         </a>
 
-
+        <a href="{% url 'history' %}" class="card-link">
+            <div class="card">
+                <h3>Área Personal</h3>
+                <p>Consulta tu historial de citas, datos personales y más.</p>
+            </div>
+        </a>
 
     </div>
 
@@ -30,7 +54,3 @@
     {% endif %}
 </div>
 {% endblock %}
-
-
-
-

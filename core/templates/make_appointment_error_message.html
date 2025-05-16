@@ -1,7 +1,7 @@
 {% block content %}
-    <script>
-        var message = 'No se puede pedir otra cita porque ya se han reservado varias\n\n'
-        alert(message);
-        window.location.href = '{% url "patient" %}';
-    </script>
+<script>
+    var message = 'No se puede pedir otra cita porque ya se han reservado varias\n\n'
+    alert(message);
+    window.location.href = '{% url "patient" %}';
+</script>
 {% endblock %}

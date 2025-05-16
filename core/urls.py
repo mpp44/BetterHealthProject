@@ -5,7 +5,6 @@ from . import views
 urlpatterns = [
     path('', views.home, name='home'),
     path('patient/', views.patient, name='patient'),
-    #path('history/', views.history, name="history"),
     path('has_insurance/', views.has_insurance, name='has_insurance'),
     path('check_insurance/', views.check_insurance, name='check_insurance'),
     path('services/', views.services, name='services'),
@@ -13,10 +12,9 @@ urlpatterns = [
     path('services/<str:service_name>/', views.select_service, name="select_service"),
     path('booking/<int:service_id>/preconfirm/', views.preconfirm_booking, name='preconfirm_booking'),
     path('booking/<int:service_id>/confirm/', views.confirm_booking, name='confirm_booking'),
-
-
-    #path('history/delete_appointment/<int:appointment_id>/', views.delete_appointment, name='delete_appointment'),
-    #path('history/edit_appointment/<int:appointment_id>', views.edit_appointment, name='edit_appointment'),
+    path('history/', views.history, name="history"),
+    path('history/delete_appointment/<int:appointment_id>/', views.delete_appointment, name='delete_appointment'),
+    path('history/edit_appointment/<int:appointment_id>', views.edit_appointment, name='edit_appointment'),
 
     path('mock/', views.mock, name='mock'),
     path('signup/', views.signup, name='signup'),

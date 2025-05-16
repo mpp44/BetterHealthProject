@@ -4,12 +4,10 @@ from django.contrib.auth import login
 from django.http import HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
 
-# Modelos y formularios
-from .models import Service, Appointment, TempBooking, UserProfile  # ⬅️ Añade TempBooking si aún no está
+from .models import Service, Appointment, TempBooking, UserProfile
 from .forms import CustomUserCreationForm
 from .api import *
 
-# Fechas y tiempos
 from datetime import datetime, timedelta, time
 from zoneinfo import ZoneInfo
 from django.utils.timezone import make_aware, now
@@ -58,6 +56,7 @@ def has_insurance(request):
         return render(request, "has_insurance.html")
 
 
+@login_required
 def check_insurance(request):
     token = get_token()
     user_profile = UserProfile.objects.filter(user=request.user).last()
@@ -67,6 +66,7 @@ def check_insurance(request):
     return redirect('insurance_services')
 
 
+@login_required
 def services(request):
     services_db = Service.objects.all()
     services_db = [s for s in services_db if not s.insurance]
@@ -74,6 +74,7 @@ def services(request):
     return render(request, "services.html", {"services": services_db})
 
 
+@login_required
 def insurance_services(request):
     services_db = Service.objects.all()
     services_db = [s for s in services_db if s.insurance]
@@ -162,9 +163,17 @@ def confirm_booking(request, service_id):
         fecha = dateparser.parse(fecha_str).date()
         hora = request.POST.get("hora")
 
+        # Verifica si ya está reservada
         if Appointment.objects.filter(service=service, fecha=fecha, hora=hora).exists():
             return render(request, "error.html", {"mensaje": "Otro usuario se ha adelantado a reservar esta hora."})
 
+        # Si es edición
+        editing_id = request.session.pop("editing_appointment_id", None)
+        if editing_id:
+            old = get_object_or_404(Appointment, id=editing_id, user=request.user)
+            old.delete()
+
+        # Crea la nueva cita
         Appointment.objects.create(
             user=request.user,
             service=service,
@@ -179,24 +188,22 @@ def confirm_booking(request, service_id):
     return redirect("services")
 
 
-'''def history(request):
-    appointments = Appointment.objects.filter(user=request.user).order_by('schedule__datetime')
+@login_required
+def history(request):
+    appointments = Appointment.objects.filter(user=request.user).order_by('created_at')
     return render(request, "history.html", {"appointments": appointments})
 
 
+@login_required
 def delete_appointment(request, appointment_id):
     appointment = get_object_or_404(Appointment, id=appointment_id, user=request.user)
     appointment.delete()
-    if appointment.schedule is not None:
-        schedule = appointment.schedule
-        schedule.available = True
-        schedule.save()
     return redirect('history')
 
 
+@login_required
 def edit_appointment(request, appointment_id):
-    appointment = get_object_or_404(Appointment, id=appointment_id)
-    schedules = Schedule.objects.filter(service=appointment.service, available=True)
-    request.session['editing_appointment_id'] = appointment.id
-    return render(request, 'calendar.html', {'schedules': schedules})'''
+    appointment = get_object_or_404(Appointment, id=appointment_id, user=request.user)
+    request.session["editing_appointment_id"] = appointment.id
 
+    return redirect("select_service", service_name=appointment.service.name)

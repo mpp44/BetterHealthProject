@@ -19,7 +19,7 @@ class CustomUserCreationForm(UserCreationForm):
     def save(self, commit=True):
         user = super().save(commit=commit)
         if commit:
-            user_profile = user.userprofile  # Ya fue creado por la señal
+            user_profile = user.userprofile
             user_profile.fecha_nacimiento = self.cleaned_data["fecha_nacimiento"]
             user_profile.numero_afiliado = self.cleaned_data["numero_afiliado"]
             user_profile.save()
