@@ -11,6 +11,7 @@ RUN pip install poetry \
     && poetry install --no-root
 
 COPY . /app/
+RUN apt-get update && apt-get install -y dos2unix && dos2unix /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
 
 EXPOSE 8000

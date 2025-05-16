@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.timezone import now
+from django.contrib.auth.hashers import make_password, check_password
 
 
 class UserProfile(models.Model):
@@ -14,13 +15,13 @@ class UserProfile(models.Model):
 
 class Appointment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    insurance = models.BooleanField(default=False)
-    service = models.ForeignKey("Service", on_delete=models.CASCADE, null=True)
-    schedule = models.ForeignKey("Schedule", on_delete=models.CASCADE, null=True)
-    date = models.DateField(null=True)
+    service = models.ForeignKey("Service", on_delete=models.CASCADE, blank=True, null=True)
+    fecha = models.DateField(blank=True, null=True)
+    hora = models.TimeField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
 
     def __str__(self):
-        return f"Appointment for {self.user.username} on {self.date} at {self.schedule.time}"
+        return f"{self.user} - {self.service.name} - {self.fecha} {self.hora}"
 
 
 class Service(models.Model):
@@ -36,11 +37,36 @@ class Service(models.Model):
         return f"Service {self.name} costs {self.price}"
 
 
-class Schedule(models.Model):
-    service = models.ForeignKey("Service", on_delete=models.CASCADE, null=True)
-    datetime = models.DateTimeField(default=now)
-    available = models.BooleanField(default=True)
+class TempBooking(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    service = models.ForeignKey('Service', on_delete=models.CASCADE)
+    fecha = models.DateField()
+    hora = models.TimeField()
+    reserved_at = models.DateTimeField(auto_now_add=True)
+
+
+    def is_expired(self):
+        from django.utils.timezone import now
+        return now() > self.reserved_at + timedelta(minutes=1)
+
+
+class StaffUser(models.Model):
+    ROLE_CHOICES = [
+        ('superadmin', 'Super Administrador'),
+        ('admin', 'Administrativo'),
+        ('finance', 'Financiero'),
+    ]
+
+    username = models.CharField(max_length=150, unique=True)
+    password = models.CharField(max_length=128)
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES)
+
+    def set_password(self, raw_password):
+        self.password = make_password(raw_password)
+
+    def check_password(self, raw_password):
+        return check_password(raw_password, self.password)
 
     def __str__(self):
-        return f"{self.datetime.strftime('%A %Y-%m-%d %H:%M')} - {self.service.name}"
+        return f"{self.username} ({self.role})"
 

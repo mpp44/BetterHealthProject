@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Panel Superadmin</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f4f7f9;
+      color: #333;
+      line-height: 1.6;
+    }
+    /* Contenedor principal: menú lateral + contenido */
+    .container {
+      display: flex;
+      min-height: 100vh;
+    }
+    /* Menú lateral izquierdo */
+    aside {
+      background: #2c3e50;
+      color: #ecf0f1;
+      width: 250px;
+      padding: 30px 20px;
+    }
+    aside h2 {
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+    aside ul {
+      list-style: none;
+    }
+    aside ul li {
+      margin-bottom: 15px;
+    }
+    aside ul li a {
+      color: #ecf0f1;
+      text-decoration: none;
+      display: block;
+      padding: 10px 15px;
+      border-radius: 4px;
+      transition: background 0.3s;
+    }
+    aside ul li a:hover {
+      background: #34495e;
+    }
+
+    /* Área principal de contenido */
+    main {
+      flex: 1;
+      padding: 30px 40px;
+    }
+    main h1 {
+      margin-bottom: 20px;
+    }
+    /* Tarjetas para cada sección */
+    .card {
+      background: #fff;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      border: 1px solid #ececec;
+      box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    .card h3 {
+      margin-bottom: 15px;
+    }
+    /* Manejo de mensajes */
+    .message {
+      margin-bottom: 15px;
+      padding: 10px;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+    .message.error {
+      background: #fdecea;
+      color: #e74c3c;
+    }
+    .message.success {
+      background: #eafaf1;
+      color: #27ae60;
+    }
+    /* Formulario */
+    form label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    form input, form select {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    form button, form input[type="submit"] {
+      background: #2c3e50;
+      border: none;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    form button:hover, form input[type="submit"]:hover {
+      background: #34495e;
+    }
+    /* Secciones de contenido, inicialmente ocultas salvo la primera */
+    .section {
+      display: none;
+    }
+    .section.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <aside>
+      <h2>Menú</h2>
+      <ul>
+        <li><a href="#" onclick="showSection('create-superuser')">Creación Superusuario</a></li>
+        <li><a href="#" onclick="showSection('users')">Usuarios Creados</a></li>
+        <li><a href="#" onclick="showSection('settings')">Ajustes</a></li>
+        <li><a href="#" onclick="showSection('finances')">Finanzas</a></li>
+        <li><a href="{% url 'admin_logout' %}">Cerrar sesión</a></li>
+      </ul>
+    </aside>
+    <main>
+      <h1>Bienvenido, Superadministrador</h1>
+
+      <div id="create-superuser" class="section active">
+        <div class="card">
+          <h3>Crear nuevo usuario de gestión</h3>
+          <!-- Mostrar mensajes (errores o éxito) -->
+          {% if messages %}
+            {% for message in messages %}
+              <div class="message {% if message.tags == 'error' %}error{% else %}success{% endif %}">
+                {{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
+
+          <form method="POST">
+            {% csrf_token %}
+            <label for="username">Usuario:</label>
+            <input type="text" name="username" id="username" placeholder="Nombre de usuario" required>
+
+            <label for="password">Contraseña:</label>
+            <input type="password" name="password" id="password" placeholder="Contraseña" required>
+
+            <label for="role">Rol:</label>
+            <select name="role" id="role" required>
+              <option value="admin">Administrativo</option>
+              <option value="finance">Financiero</option>
+            </select>
+
+            <input type="submit" value="Crear Usuario">
+          </form>
+        </div>
+      </div>
+
+      <div id="users" class="section">
+        <div class="card">
+          <h3>Usuarios Creados</h3>
+          <p>Aquí se mostrarán los usuarios que ha creado el superadministrador.</p>
+        </div>
+      </div>
+
+      <!-- Sección: Ajustes -->
+      <div id="settings" class="section">
+        <div class="card">
+          <h3>Ajustes</h3>
+          <p>Sección para configurar parámetros del sistema y personalizar preferencias.</p>
+        </div>
+      </div>
+
+      <div id="finances" class="section">
+        <div class="card">
+          <h3>Finanzas</h3>
+          <p>Sección de gestión de finanzas, reportes y análisis económico.</p>
+          <!-- Implementación de la lógica de finanzas -->
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Función para cambiar la sección visible
+    function showSection(sectionId) {
+      var sections = document.querySelectorAll('.section');
+      sections.forEach(function(section) {
+        section.classList.remove('active');
+      });
+      document.getElementById(sectionId).classList.add('active');
+    }
+  </script>
+</body>
+</html>

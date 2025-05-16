@@ -25,16 +25,6 @@ def get_token():
         raise Exception(f"Error fetching token: {response.status_code} - {response.text}")
 
 
-def get_services(token):
-    headers = {"Authorization": f"Bearer {token}"}
-    response = requests.get(SERVICES_URL, headers=headers)
-
-    if response.status_code == 200:
-        return response.json()
-    else:
-        raise Exception(f"Cannot get services: {response.status_code} - {response.text}")
-
-
 def verify_insurance(token, afiliado):
     headers = {"Authorization": f"Bearer {token}"}
     response = requests.get(f"{CHECK_PATIENT_URL}/{afiliado}", headers=headers)

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-5">
+    <h3>Confirmar Cita</h3>
+    <ul class="list-group my-4">
+        <li class="list-group-item"><strong>Servicio:</strong> {{ service.name }}</li>
+        <li class="list-group-item"><strong>Fecha:</strong> {{ fecha|date:"l d/m/Y" }}</li>
+        <li class="list-group-item"><strong>Hora:</strong> {{ hora }}</li>
+        <li class="list-group-item"><strong>Precio:</strong> {{ precio }} €</li>
+    </ul>
+
+    <form method="post" action="{% url 'confirm_booking' service.id %}">
+        {% csrf_token %}
+        <input type="hidden" name="fecha" value="{{ fecha }}">
+        <input type="hidden" name="hora" value="{{ hora }}">
+        <button type="submit" class="btn btn-primary">Confirmar Cita</button>
+        <a href="{% url 'patient' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

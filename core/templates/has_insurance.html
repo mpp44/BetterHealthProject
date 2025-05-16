@@ -3,14 +3,10 @@
 {% block content %}
 <div class="container">
 
-   <div class="timeline-steps">
+    <div class="timeline-steps">
         <div class="step completed">
             <div class="step-circle"></div>
-            <span class="step-label">Datos personales</span>
-        </div>
-        <div class="step completed">
-            <div class="step-circle"></div>
-            <span class="step-label">Tipo de cita</span>
+            <span class="step-label">Acción</span>
         </div>
         <div class="step current">
             <div class="step-circle"></div>
@@ -18,7 +14,11 @@
         </div>
         <div class="step future">
             <div class="step-circle"></div>
-            <span class="step-label">Confirmación</span>
+            <span class="step-label">Servicio</span>
+        </div>
+        <div class="step future">
+            <div class="step-circle"></div>
+            <span class="step-label">Fecha y Hora</span>
         </div>
     </div>
 
@@ -26,16 +26,16 @@
         <h1 class="signup-title">Selecciona la cobertura médica:</h1>
     </header>
 
-     <div class="grid">
+    <div class="grid">
         <a href="{% url 'check_insurance' %}" class="card-link">
-          <div class="card">
-            <h3>MÚTUA</h3>
-          </div>
+            <div class="card">
+                <h3>MÚTUA</h3>
+            </div>
         </a>
         <a href="{% url 'services' %}" class="card-link">
-          <div class="card">
-            <h3>PARTICULAR</h3>
-          </div>
+            <div class="card">
+                <h3>PARTICULAR</h3>
+            </div>
         </a>
     </div>
 
