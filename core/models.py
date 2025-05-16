@@ -44,7 +44,6 @@ class TempBooking(models.Model):
     hora = models.TimeField()
     reserved_at = models.DateTimeField(auto_now_add=True)
 
-
     def is_expired(self):
         from django.utils.timezone import now
         return now() > self.reserved_at + timedelta(minutes=1)
@@ -69,4 +68,3 @@ class StaffUser(models.Model):
 
     def __str__(self):
         return f"{self.username} ({self.role})"
-
