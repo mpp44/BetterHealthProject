@@ -216,6 +216,11 @@ def edit_appointment(request, appointment_id):
     return redirect("select_service", service_name=appointment.service.name)
 
 
+@login_required(login_url='login')
+def private(request):
+    return render(request, "private.html")
+
+
 def admin_login(request):
     if request.method == "POST":
         username = request.POST["username"]
@@ -237,45 +242,6 @@ def admin_login(request):
         except StaffUser.DoesNotExist:
             messages.error(request, "Usuario no encontrado.")
     return render(request, 'administration/login.html')
-
-
-@staff_login_required
-@role_required('admin')
-def administrativo_dashboard(request):
-    usuarios = UserProfile.objects.select_related('user')
-    appointments = None
-    active_section = 'usuarios'
-
-    if request.method == "POST":
-        if "appointment_ids" in request.POST:
-            appointment_ids = request.POST.getlist("appointment_ids")
-            Appointment.objects.filter(id__in=appointment_ids).update(confirmada=True)
-            messages.success(request, "Las citas seleccionadas han sido validadas.")
-            active_section = 'citas'
-
-        elif "search" in request.POST:
-            user_id = request.POST.get("user_id")
-            selected_user = get_object_or_404(User, pk=user_id)
-            appointments = Appointment.objects.filter(user=selected_user).select_related('service').order_by('fecha', 'hora')
-            active_section = 'citas'
-
-    return render(request, 'administration/administrativo_dashboard.html', {
-        'usuarios': usuarios,
-        'appointments': appointments,
-        'active_section': active_section
-    })
-
-
-
-@staff_login_required
-@role_required('finance')
-def financiero_dashboard(request):
-    return render(request, 'administration/financiero_dashboard.html')
-
-
-@login_required(login_url='login')
-def private(request):
-    return render(request, "private.html")
 
 
 def admin_logout(request):
@@ -304,7 +270,45 @@ def admin_dashboard(request):
     return render(request, 'administration/admin_dashboard.html')
 
 
-@login_required
+@staff_login_required
+@role_required('admin')
+def administrativo_dashboard(request):
+    usuarios = UserProfile.objects.select_related('user')
+    appointments = None
+    active_section = 'usuarios'
+
+    if request.method == "POST":
+        if "appointment_ids" in request.POST:
+            appointment_ids = request.POST.getlist("appointment_ids")
+            citas = Appointment.objects.filter(id__in=appointment_ids).select_related('service')
+            for cita in citas:
+                cita.confirmada = True
+                cita.save()
+
+                from .models import Invoice
+                if not hasattr(cita, 'invoice'):
+                    Invoice.objects.create(
+                        appointment=cita,
+                        amount=cita.service.price
+                    )
+            messages.success(request, "Las citas seleccionadas han sido validadas.")
+            active_section = 'citas'
+
+        elif "search" in request.POST:
+            user_id = request.POST.get("user_id")
+            selected_user = get_object_or_404(User, pk=user_id)
+            appointments = Appointment.objects.filter(user=selected_user).select_related('service').order_by('fecha', 'hora')
+            active_section = 'citas'
+
+    return render(request, 'administration/administrativo_dashboard.html', {
+        'usuarios': usuarios,
+        'appointments': appointments,
+        'active_section': active_section
+    })
+
+
+@staff_login_required
+@role_required('finance')
 def finance_panel(request):
     facturas = Invoice.objects.all().order_by('-issued_date')
 

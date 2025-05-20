@@ -25,7 +25,6 @@ class Appointment(models.Model):
         return f"{self.user} - {self.service.name} - {self.fecha} {self.hora}"
 
 
-
 class Service(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(max_length=100)
