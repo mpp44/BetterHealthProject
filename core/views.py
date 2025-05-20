@@ -7,8 +7,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib import messages
 from .utils import staff_login_required, role_required
 
+from .models import Service, Appointment, TempBooking, UserProfile, StaffUser, User, Invoice
 
-from .models import Service, Appointment, TempBooking, UserProfile, StaffUser, User
 from .forms import CustomUserCreationForm
 from .api import *
 
@@ -63,11 +63,14 @@ def has_insurance(request):
 @login_required
 def check_insurance(request):
     token = get_token()
-    user_profile = UserProfile.objects.filter(user=request.user).last()
+    user_profile = UserProfile.objects.get(user=request.user)
     afiliado = user_profile.numero_afiliado
-    verify_insurance(token, afiliado)
+    verificado = verify_insurance(token, afiliado)
 
-    return redirect('insurance_services')
+    if verificado:
+        return redirect('insurance_services')
+    else:
+        return render(request, "error_insurance.html", {"mensaje": "El codigo de afiliado no pertenece a ninguna mútua o no es correcto."})
 
 
 @login_required
@@ -138,7 +141,7 @@ def preconfirm_booking(request, service_id):
         hora = request.POST.get("hora")
 
         if Appointment.objects.filter(service=service, fecha=fecha, hora=hora).exists():
-            return render(request, "error.html", {"mensaje": "Ese horario ya ha sido reservado."})
+            return render(request, "error_booking.html", {"mensaje": "Ese horario ya ha sido reservado."})
 
         TempBooking.objects.update_or_create(
             user=request.user,
@@ -169,7 +172,7 @@ def confirm_booking(request, service_id):
 
         # Verifica si ya está reservada
         if Appointment.objects.filter(service=service, fecha=fecha, hora=hora).exists():
-            return render(request, "error.html", {"mensaje": "Otro usuario se ha adelantado a reservar esta hora."})
+            return render(request, "error_booking.html", {"mensaje": "Otro usuario se ha adelantado a reservar esta hora."})
 
         # Si es edición
         editing_id = request.session.pop("editing_appointment_id", None)
@@ -212,6 +215,7 @@ def edit_appointment(request, appointment_id):
 
     return redirect("select_service", service_name=appointment.service.name)
 
+
 def admin_login(request):
     if request.method == "POST":
         username = request.POST["username"]
@@ -234,10 +238,6 @@ def admin_login(request):
             messages.error(request, "Usuario no encontrado.")
     return render(request, 'administration/login.html')
 
-@staff_login_required
-@role_required('superadmin')
-def admin_dashboard(request):
-    return render(request, 'administration/admin_dashboard.html')
 
 @staff_login_required
 @role_required('admin')
@@ -266,14 +266,17 @@ def administrativo_dashboard(request):
     })
 
 
+
 @staff_login_required
 @role_required('finance')
 def financiero_dashboard(request):
     return render(request, 'administration/financiero_dashboard.html')
 
+
 @login_required(login_url='login')
 def private(request):
     return render(request, "private.html")
+
 
 def admin_logout(request):
     request.session.flush()
@@ -300,3 +303,11 @@ def admin_dashboard(request):
 
     return render(request, 'administration/admin_dashboard.html')
 
+
+@login_required
+def finance_panel(request):
+    facturas = Invoice.objects.all().order_by('-issued_date')
+
+    return render(request, 'administration/financiero_dashboard.html', {
+        'facturas': facturas
+    })

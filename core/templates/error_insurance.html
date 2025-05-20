@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-5 text-center">
+    <div class="alert alert-danger">
+        <h4 class="alert-heading">¡Oops!</h4>
+        <p>{{ mensaje }}</p>
+        <a href="{% url 'has_insurance' %}" class="btn btn-primary mt-3">Volver a seleccionar mútua</a>
+    </div>
+</div>
+{% endblock %}

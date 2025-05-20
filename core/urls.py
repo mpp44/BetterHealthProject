@@ -25,6 +25,7 @@ urlpatterns = [
     path('administration/', views.admin_login, name='admin_login'),
     path('administration/dashboard/', views.admin_dashboard, name='admin_dashboard'),
     path('administration/administrativo/', views.administrativo_dashboard, name='administrativo_dashboard'),
-    path('administration/financiero/', views.financiero_dashboard, name='financiero_dashboard'),
+    path('administration/financiero/', views.finance_panel, name='finance_panel'),
+
     path('administration/logout/', views.admin_logout, name='admin_logout'),
 ]
