@@ -31,10 +31,8 @@ def verify_insurance(token, afiliado):
 
     if response.status_code == 200:
         return True
-    elif response.status_code == 422:
-        return False
     else:
-        raise Exception(f"Error verifying insurance: {response.status_code} - {response.text}")
+        return False
 
 
 def get_patients(token):
