@@ -19,9 +19,11 @@ class Appointment(models.Model):
     fecha = models.DateField(blank=True, null=True)
     hora = models.TimeField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    confirmada = models.BooleanField(default=False)  # Campo añadido para la validación
 
     def __str__(self):
         return f"{self.user} - {self.service.name} - {self.fecha} {self.hora}"
+
 
 
 class Service(models.Model):

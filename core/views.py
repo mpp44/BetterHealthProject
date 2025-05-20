@@ -8,7 +8,7 @@ from django.contrib import messages
 from .utils import staff_login_required, role_required
 
 
-from .models import Service, Appointment, TempBooking, UserProfile, StaffUser
+from .models import Service, Appointment, TempBooking, UserProfile, StaffUser, User
 from .forms import CustomUserCreationForm
 from .api import *
 
@@ -242,7 +242,29 @@ def admin_dashboard(request):
 @staff_login_required
 @role_required('admin')
 def administrativo_dashboard(request):
-    return render(request, 'administration/administrativo_dashboard.html')
+    usuarios = UserProfile.objects.select_related('user')
+    appointments = None
+    active_section = 'usuarios'
+
+    if request.method == "POST":
+        if "appointment_ids" in request.POST:
+            appointment_ids = request.POST.getlist("appointment_ids")
+            Appointment.objects.filter(id__in=appointment_ids).update(confirmada=True)
+            messages.success(request, "Las citas seleccionadas han sido validadas.")
+            active_section = 'citas'
+
+        elif "search" in request.POST:
+            user_id = request.POST.get("user_id")
+            selected_user = get_object_or_404(User, pk=user_id)
+            appointments = Appointment.objects.filter(user=selected_user).select_related('service').order_by('fecha', 'hora')
+            active_section = 'citas'
+
+    return render(request, 'administration/administrativo_dashboard.html', {
+        'usuarios': usuarios,
+        'appointments': appointments,
+        'active_section': active_section
+    })
+
 
 @staff_login_required
 @role_required('finance')

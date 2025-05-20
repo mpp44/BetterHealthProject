@@ -78,6 +78,25 @@
     .section.active {
       display: block;
     }
+    .messages {
+      list-style: none;
+      margin-bottom: 15px;
+      padding: 10px;
+      background-color: #e0ffe0;
+      border: 1px solid #70c470;
+      color: #2d662d;
+      border-radius: 5px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    table th, table td {
+      padding: 10px;
+      border: 1px solid #ccc;
+      text-align: left;
+    }
     /* Formularios */
     form label {
       display: block;
@@ -126,7 +145,7 @@
       <h1>Bienvenido al Panel Administrativo</h1>
 
       <!-- Sección: Usuarios -->
-      <div id="usuarios" class="section active">
+      <div id="usuarios" class="section {% if active_section == 'usuarios' %}active{% endif %}">
         <div class="card">
           <h3>Usuarios</h3>
           <p>Aquí puedes visualizar y gestionar los usuarios del sistema.</p>
@@ -134,14 +153,61 @@
         </div>
       </div>
 
-      <!-- Sección: Citas -->
-      <div id="citas" class="section">
+ <div id="citas" class="section {% if active_section == 'citas' %}active{% endif %}">
         <div class="card">
           <h3>Citas</h3>
           <p>Aquí verás la lista de citas programadas, con opción de modificar o cancelar cada una.</p>
-          <!-- Aquí incluir la lógica para listar y gestionar citas -->
+
+          <!-- Formulario para buscar citas de un usuario concreto -->
+          <form method="POST" action="{% url 'administrativo_dashboard' %}">
+            {% csrf_token %}
+            <div>
+              <label for="user_id">Selecciona usuario:</label>
+              <select name="user_id" id="user_id">
+  {% for profile in usuarios %}
+    <option value="{{ profile.user.id }}">{{ profile.user.get_full_name }} ({{ profile.user.username }})</option>
+  {% endfor %}
+</select>
+              <button type="submit" name="search" value="1">Buscar citas</button>
+            </div>
+          </form>
+
+          <!-- Listado de citas del usuario seleccionado -->
+          {% if appointments %}
+         <form method="POST" action="{% url 'administrativo_dashboard' %}">
+            {% csrf_token %}
+            <table>
+              <thead>
+                <tr>
+                  <th>Servicio</th>
+                  <th>Fecha</th>
+                  <th>Hora</th>
+                  <th>Confirmada</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for appointment in appointments %}
+                <tr>
+                  <td>{{ appointment.service.name }}</td>
+                  <td>{{ appointment.fecha|date:"Y-m-d" }}</td>
+                  <td>{{ appointment.hora|time:"H:i" }}</td>
+                  <td>
+                    {% if appointment.confirmada %}
+                      <input type="checkbox" checked disabled>
+                    {% else %}
+                      <input type="checkbox" name="appointment_ids" value="{{ appointment.id }}">
+                    {% endif %}
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            <button type="submit">Validar citas seleccionadas</button>
+          </form>
+          {% endif %}
         </div>
       </div>
+
 
       <!-- Sección: Realizar Cita -->
       <div id="realizar-cita" class="section">
