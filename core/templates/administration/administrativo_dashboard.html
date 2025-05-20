@@ -118,6 +118,7 @@
         <li><a href="#" onclick="showSection('usuarios')">Usuarios</a></li>
         <li><a href="#" onclick="showSection('citas')">Citas</a></li>
         <li><a href="#" onclick="showSection('realizar-cita')">Realizar Cita</a></li>
+        <li><a href="#" onclick="showSection('catalogo-servicios')">Catalogo de Servicios</a></li>
         <li><a href="{% url 'admin_logout' %}">Cerrar sesión</a></li>
       </ul>
     </aside>
@@ -164,6 +165,16 @@
 
             <input type="submit" value="Agendar Cita">
           </form>
+        </div>
+      </div>
+
+
+      <!-- Sección: Servicios -->
+      <div id="catalogo-servicios" class="section active">
+        <div class="card">
+          <h3>Catalogo de Servicios</h3>
+          <p>Aquí puedes visualizar y editar el catalogo de servicios</p>
+          <!-- Aquí agregar la lógica para ver servicios -->
         </div>
       </div>
     </main>

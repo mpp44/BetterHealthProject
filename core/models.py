@@ -68,3 +68,14 @@ class StaffUser(models.Model):
 
     def __str__(self):
         return f"{self.username} ({self.role})"
+
+
+class Invoice(models.Model):
+    appointment = models.ForeignKey(Appointment, on_delete=models.CASCADE)
+    issued_date = models.DateField(auto_now_add=True)
+    amount = models.DecimalField(max_digits=8, decimal_places=2)
+    is_paid = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Factura #{self.id} — {self.appointment.service.name} ({self.amount} €)"
+

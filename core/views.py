@@ -7,8 +7,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib import messages
 from .utils import staff_login_required, role_required
 
-
-from .models import Service, Appointment, TempBooking, UserProfile, StaffUser
+from .models import Service, Appointment, TempBooking, UserProfile, StaffUser, Invoice
 from .forms import CustomUserCreationForm
 from .api import *
 
@@ -63,7 +62,7 @@ def has_insurance(request):
 @login_required
 def check_insurance(request):
     token = get_token()
-    user_profile = UserProfile.objects.filter(user=request.user).last()
+    user_profile = UserProfile.objects.get(user=request.user)
     afiliado = user_profile.numero_afiliado
     verify_insurance(token, afiliado)
 
@@ -212,6 +211,7 @@ def edit_appointment(request, appointment_id):
 
     return redirect("select_service", service_name=appointment.service.name)
 
+
 def admin_login(request):
     if request.method == "POST":
         username = request.POST["username"]
@@ -234,24 +234,23 @@ def admin_login(request):
             messages.error(request, "Usuario no encontrado.")
     return render(request, 'administration/login.html')
 
-@staff_login_required
-@role_required('superadmin')
-def admin_dashboard(request):
-    return render(request, 'administration/admin_dashboard.html')
 
 @staff_login_required
 @role_required('admin')
 def administrativo_dashboard(request):
     return render(request, 'administration/administrativo_dashboard.html')
 
+
 @staff_login_required
 @role_required('finance')
 def financiero_dashboard(request):
     return render(request, 'administration/financiero_dashboard.html')
 
+
 @login_required(login_url='login')
 def private(request):
     return render(request, "private.html")
+
 
 def admin_logout(request):
     request.session.flush()
@@ -278,3 +277,11 @@ def admin_dashboard(request):
 
     return render(request, 'administration/admin_dashboard.html')
 
+
+@login_required
+def finance_panel(request):
+    facturas = Invoice.objects.all().order_by('-issued_date')
+
+    return render(request, 'administration/financiero_dashboard.html', {
+        'facturas': facturas
+    })
