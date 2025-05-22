@@ -151,6 +151,10 @@ aside ul li a:hover {
       background: #34495e;
     }
 
+
+
+
+
     </style>
 </head>
 <body>
@@ -217,11 +221,14 @@ aside ul li a:hover {
                     <span>Cerrar sesión</span>
                 </a>
             </li>
+
+
         </ul>
     </aside>
 
     <main>
         <h1>Bienvenido al Panel Administrativo</h1>
+
         <!-- Mensajes de éxito -->
         {% if messages %}
         <ul class="messages">
@@ -289,14 +296,8 @@ aside ul li a:hover {
 
                     <button type="submit">Crear Usuario</button>
                 </form>
-
             </div>
         </div>
-
-        <div id="citas" class="section {% if active_section == 'citas' %}active{% endif %}">
-            <div class="card">
-                <h3>Citas</h3>
-                <p>Aquí verás la lista de citas programadas, con opción de modificar o cancelar cada una.</p>
 
 
         <!-- Sección: Citas -->
@@ -310,9 +311,7 @@ aside ul li a:hover {
                         <label for="user_id">Selecciona usuario:</label>
                         <select name="user_id" id="user_id">
                             {% for profile in usuarios %}
-
                             <option value="{{ profile.user.id }}">{{ profile.user.get_full_name }} ({{ profile.user.username }})</option>
-
                             {% endfor %}
                         </select>
                         <button type="submit" name="search" value="1">Buscar citas</button>
@@ -352,7 +351,6 @@ aside ul li a:hover {
                     <button type="submit">Validar citas seleccionadas</button>
                 </form>
                 {% endif %}
-
                 <h3><b>CITAS PROGRAMADAS</b></h3>
                 <!-- Formulario para filtrar el calendario semanal por servicio y semana -->
     <form method="post">
@@ -515,12 +513,17 @@ aside ul li a:hover {
 
 <script>
     function showSection(sectionId) {
-        var sections = document.querySelectorAll('.section');
-        sections.forEach(function (section) {
-            section.classList.remove('active');
-        });
-        document.getElementById(sectionId).classList.add('active');
+      var sections = document.querySelectorAll('.section');
+      sections.forEach(function(section) {
+        section.classList.remove('active');
+      });
+      document.getElementById(sectionId).classList.add('active');
     }
+
+
+
+
+
 </script>
 </body>
 </html>

@@ -216,11 +216,6 @@ def edit_appointment(request, appointment_id):
     return redirect("select_service", service_name=appointment.service.name)
 
 
-@login_required(login_url='login')
-def private(request):
-    return render(request, "private.html")
-
-
 def admin_login(request):
     if request.method == "POST":
         username = request.POST["username"]
@@ -242,6 +237,7 @@ def admin_login(request):
         except StaffUser.DoesNotExist:
             messages.error(request, "Usuario no encontrado.")
     return render(request, 'administration/login.html')
+
 
 @staff_login_required
 @role_required('admin')
@@ -435,6 +431,7 @@ def financiero_dashboard(request):
 def private(request):
     return render(request, "private.html")
 
+
 def admin_logout(request):
     request.session.flush()
     return redirect('admin_login')
@@ -459,3 +456,6 @@ def admin_dashboard(request):
             messages.success(request, f"Usuario '{username}' creado correctamente como {role}.")
 
     return render(request, 'administration/admin_dashboard.html')
+
+
+
