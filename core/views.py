@@ -8,7 +8,7 @@ from django.contrib import messages
 from .utils import staff_login_required, role_required
 
 from .models import Service, Appointment, TempBooking, UserProfile, StaffUser, User, Invoice
-
+from django.utils import timezone
 from .forms import CustomUserCreationForm
 from .api import *
 
@@ -242,36 +242,190 @@ def admin_login(request):
 @staff_login_required
 @role_required('admin')
 def administrativo_dashboard(request):
-    usuarios = UserProfile.objects.select_related('user')
+    # Consultas iniciales
+    usuarios = UserProfile.objects.select_related('user').all()
     appointments = None
-    active_section = 'usuarios'
+    services = Service.objects.all()
+    weekly_appointments = None  # Variable para el calendario semanal
+    active_section = 'usuarios'  # Valor por defecto
 
     if request.method == "POST":
+        # Procesar confirmación de citas y facturación
         if "appointment_ids" in request.POST:
             appointment_ids = request.POST.getlist("appointment_ids")
+            # Actualizamos las citas a confirmadas
             Appointment.objects.filter(id__in=appointment_ids).update(confirmada=True)
-            messages.success(request, "Las citas seleccionadas han sido validadas.")
+            # Generamos la factura para cada cita confirmada
+            confirmed_appointments = Appointment.objects.filter(id__in=appointment_ids)
+            for appointment in confirmed_appointments:
+                if appointment.service and not Invoice.objects.filter(appointment=appointment).exists():
+                    Invoice.objects.create(
+                        appointment=appointment,
+                        amount=appointment.service.price
+                    )
+            messages.success(request, "Las citas seleccionadas han sido validadas y facturadas.")
             active_section = 'citas'
 
+        # Buscar citas por usuario
         elif "search" in request.POST:
             user_id = request.POST.get("user_id")
             selected_user = get_object_or_404(User, pk=user_id)
             appointments = Appointment.objects.filter(user=selected_user).select_related('service').order_by('fecha', 'hora')
             active_section = 'citas'
 
+        # Procesar creación de nuevo usuario
+        elif "create_user" in request.POST:
+            username = request.POST.get('username')
+            email = request.POST.get('email')
+            numero_afiliado = request.POST.get('numero_afiliado', '')
+            fecha_nacimiento = request.POST.get('fecha_nacimiento')
+            if User.objects.filter(username=username).exists():
+                messages.error(request, 'El nombre de usuario ya existe.')
+            else:
+                new_user = User.objects.create(username=username, email=email)
+                UserProfile.objects.create(
+                    user=new_user,
+                    numero_afiliado=numero_afiliado,
+                    fecha_nacimiento=fecha_nacimiento if fecha_nacimiento else None
+                )
+                messages.success(request, 'Usuario creado exitosamente.')
+            active_section = 'usuarios'
+            usuarios = UserProfile.objects.select_related('user').all()
+
+        # Procesar creación manual de servicio
+        elif "create_service" in request.POST:
+            service_name = request.POST.get("service_name")
+            description = request.POST.get("description")
+            service_type = request.POST.get("type")
+            price = request.POST.get("price")
+            insurance = request.POST.get("insurance") == "on"
+            duration = request.POST.get("duration")
+            authorization = request.POST.get("authorization") == "on"
+            try:
+                price = float(price)
+                duration = int(duration)
+                Service.objects.create(
+                    name=service_name,
+                    description=description,
+                    type=service_type,
+                    price=price,
+                    insurance=insurance,
+                    duration=duration,
+                    authorization=authorization,
+                )
+                messages.success(request, "Servicio agregado exitosamente.")
+            except Exception as e:
+                messages.error(request, f"Error al crear el servicio: {e}")
+            active_section = 'services'
+            services = Service.objects.all()
+
+        # Procesar importación masiva mediante CSV
+        elif "upload_csv" in request.POST:
+            csv_file = request.FILES.get("csv_file")
+            if csv_file:
+                import csv, io
+                try:
+                    data_set = csv_file.read().decode('UTF-8')
+                    io_string = io.StringIO(data_set)
+                    reader = csv.DictReader(io_string)
+                    expected_columns = ['name', 'description', 'type', 'price', 'insurance', 'duration', 'authorization']
+                    if not all(field in reader.fieldnames for field in expected_columns):
+                        messages.error(
+                            request,
+                            "El archivo CSV no contiene todas las columnas necesarias. "
+                            "Se requieren: " + ", ".join(expected_columns)
+                        )
+                    else:
+                        rows_created = 0
+                        rows_skipped = 0
+                        duplicate_names = []
+                        for row in reader:
+                            if not row["name"].strip() or not row["description"].strip() or not row["type"].strip() or not row["price"].strip() or not row["insurance"].strip() or not row["duration"].strip() or not row["authorization"].strip():
+                                rows_skipped += 1
+                                continue
+                            name = row.get("name").strip()
+                            if Service.objects.filter(name=name).exists():
+                                duplicate_names.append(name)
+                                rows_skipped += 1
+                                continue
+                            try:
+                                description = row.get("description").strip()
+                                service_type = row.get("type").strip()
+                                price = float(row.get("price"))
+                                insurance = row.get("insurance", "False").strip().lower() in ("true", "1", "yes")
+                                duration = int(row.get("duration"))
+                                authorization = row.get("authorization", "False").strip().lower() in ("true", "1", "yes")
+                                Service.objects.create(
+                                    name=name,
+                                    description=description,
+                                    type=service_type,
+                                    price=price,
+                                    insurance=insurance,
+                                    duration=duration,
+                                    authorization=authorization,
+                                )
+                                rows_created += 1
+                            except Exception as e:
+                                rows_skipped += 1
+                                continue
+                        msg = f"CSV importado: {rows_created} servicios agregados"
+                        if duplicate_names:
+                            msg += f". Se omitieron {len(duplicate_names)} servicios duplicados ({', '.join(duplicate_names)})"
+                        if rows_skipped and not duplicate_names:
+                            msg += f". Se omitieron {rows_skipped} filas por campos faltantes o errores."
+                        messages.success(request, msg)
+                except Exception as e:
+                    messages.error(request, f"Error al procesar el archivo CSV: {e}")
+            else:
+                messages.error(request, "No se ha seleccionado ningún archivo CSV.")
+            active_section = 'services'
+            services = Service.objects.all()
+
+        # Procesar filtro del calendario semanal para un servicio con citas de lunes a viernes
+        elif "filter_weekly_calendar" in request.POST:
+            service_id = request.POST.get("service_id")
+            week_start_str = request.POST.get("week_start")  # Fecha que define la semana
+            if service_id:
+                if week_start_str:
+                    try:
+                        selected_date = datetime.strptime(week_start_str, "%Y-%m-%d").date()
+                    except ValueError:
+                        selected_date = timezone.now().date()
+                else:
+                    selected_date = timezone.now().date()
+                # Calcular el lunes de la semana (si se selecciona cualquier día, se ajusta al lunes)
+                monday = selected_date - timedelta(days=selected_date.weekday())
+                # Considerar citas solo de lunes a viernes (viernes = lunes + 4 días)
+                friday = monday + timedelta(days=4)
+                weekly_appointments = Appointment.objects.filter(
+                    service_id=service_id,
+                    confirmada=True,
+                    fecha__gte=monday,
+                    fecha__lte=friday
+                ).select_related('service', 'user').order_by('fecha', 'hora')
+                active_section = 'citas'
+            else:
+                weekly_appointments = None
+                messages.error(request, "Debes seleccionar un servicio para filtrar las citas de la semana.")
+                active_section = 'citas'
+
     return render(request, 'administration/administrativo_dashboard.html', {
         'usuarios': usuarios,
         'appointments': appointments,
+        'services': services,
+        'weekly_appointments': weekly_appointments,
         'active_section': active_section
     })
-
 
 
 @staff_login_required
 @role_required('finance')
 def financiero_dashboard(request):
-    return render(request, 'administration/financiero_dashboard.html')
+    facturas = Invoice.objects.all().order_by('-issued_date')
 
+    return render(request, 'administration/financiero_dashboard.html', {
+        'facturas': facturas
+    })
 
 @login_required(login_url='login')
 def private(request):
@@ -304,10 +458,4 @@ def admin_dashboard(request):
     return render(request, 'administration/admin_dashboard.html')
 
 
-@login_required
-def finance_panel(request):
-    facturas = Invoice.objects.all().order_by('-issued_date')
 
-    return render(request, 'administration/financiero_dashboard.html', {
-        'facturas': facturas
-    })
