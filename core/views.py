@@ -7,7 +7,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib import messages
 from .utils import staff_login_required, role_required
 
-from .models import Service, Appointment, TempBooking, UserProfile, StaffUser, User, Invoice
+from .models import *
 from django.utils import timezone
 from .forms import CustomUserCreationForm
 from .api import *
@@ -70,7 +70,8 @@ def check_insurance(request):
     if verificado:
         return redirect('insurance_services')
     else:
-        return render(request, "error_insurance.html", {"mensaje": "El codigo de afiliado no pertenece a ninguna mútua o no es correcto."})
+        return render(request, "error_insurance.html",
+                      {"mensaje": "El codigo de afiliado no pertenece a ninguna mútua o no es correcto."})
 
 
 @login_required
@@ -108,6 +109,11 @@ def select_service(request, service_name):
 
                 while start < end:
                     hora = start.time()
+
+                    if fecha_obj == today and start <= datetime.now(ZoneInfo("Europe/Madrid")):
+                        start += intervalo
+                        continue
+
                     ya_reservada = Appointment.objects.filter(
                         service=service, fecha=fecha_obj, hora=hora
                     ).exists()
@@ -120,6 +126,7 @@ def select_service(request, service_name):
                         horarios.append(hora)
 
                     start += intervalo
+
         except ValueError:
             fecha_obj = None
 
@@ -170,17 +177,15 @@ def confirm_booking(request, service_id):
         fecha = dateparser.parse(fecha_str).date()
         hora = request.POST.get("hora")
 
-        # Verifica si ya está reservada
         if Appointment.objects.filter(service=service, fecha=fecha, hora=hora).exists():
-            return render(request, "error_booking.html", {"mensaje": "Otro usuario se ha adelantado a reservar esta hora."})
+            return render(request, "error_booking.html",
+                          {"mensaje": "Otro usuario se ha adelantado a reservar esta hora."})
 
-        # Si es edición
         editing_id = request.session.pop("editing_appointment_id", None)
         if editing_id:
             old = get_object_or_404(Appointment, id=editing_id, user=request.user)
             old.delete()
 
-        # Crea la nueva cita
         Appointment.objects.create(
             user=request.user,
             service=service,
@@ -197,6 +202,11 @@ def confirm_booking(request, service_id):
 
 @login_required
 def history(request):
+    appointments = Appointment.objects.filter(user=request.user)
+    for appointment in appointments:
+        if appointment.confirmada:
+            appointment.delete()
+            appointment.save()
     appointments = Appointment.objects.filter(user=request.user).order_by('created_at')
     return render(request, "history.html", {"appointments": appointments})
 
@@ -204,6 +214,14 @@ def history(request):
 @login_required
 def delete_appointment(request, appointment_id):
     appointment = get_object_or_404(Appointment, id=appointment_id, user=request.user)
+
+    CanceledAppointment.objects.create(
+        user=appointment.user,
+        service=appointment.service,
+        fecha=appointment.fecha,
+        hora=appointment.hora
+    )
+
     appointment.delete()
     return redirect('history')
 
@@ -242,20 +260,18 @@ def admin_login(request):
 @staff_login_required
 @role_required('admin')
 def administrativo_dashboard(request):
-    # Consultas iniciales
     usuarios = UserProfile.objects.select_related('user').all()
     appointments = None
     services = Service.objects.all()
-    weekly_appointments = None  # Variable para el calendario semanal
-    active_section = 'usuarios'  # Valor por defecto
+    weekly_appointments = None
+    active_section = 'usuarios'
+    citas_canceladas = None
+    citas_realizadas = None
 
     if request.method == "POST":
-        # Procesar confirmación de citas y facturación
         if "appointment_ids" in request.POST:
             appointment_ids = request.POST.getlist("appointment_ids")
-            # Actualizamos las citas a confirmadas
             Appointment.objects.filter(id__in=appointment_ids).update(confirmada=True)
-            # Generamos la factura para cada cita confirmada
             confirmed_appointments = Appointment.objects.filter(id__in=appointment_ids)
             for appointment in confirmed_appointments:
                 if appointment.service and not Invoice.objects.filter(appointment=appointment).exists():
@@ -263,17 +279,25 @@ def administrativo_dashboard(request):
                         appointment=appointment,
                         amount=appointment.service.price
                     )
+                    appointment.delete()
+
+                    CompletedAppointment.objects.create(
+                        user=appointment.user,
+                        service=appointment.service,
+                        fecha=appointment.fecha,
+                        hora=appointment.hora
+                    )
             messages.success(request, "Las citas seleccionadas han sido validadas y facturadas.")
             active_section = 'citas'
 
-        # Buscar citas por usuario
         elif "search" in request.POST:
             user_id = request.POST.get("user_id")
             selected_user = get_object_or_404(User, pk=user_id)
-            appointments = Appointment.objects.filter(user=selected_user).select_related('service').order_by('fecha', 'hora')
+            appointments = Appointment.objects.filter(user=selected_user).select_related('service').order_by('fecha','hora')
+            citas_canceladas = CanceledAppointment.objects.filter(user=selected_user).select_related('service').order_by('fecha','hora')
+            citas_realizadas = CompletedAppointment.objects.filter(user=selected_user).select_related('service').order_by('fecha','hora')
             active_section = 'citas'
 
-        # Procesar creación de nuevo usuario
         elif "create_user" in request.POST:
             username = request.POST.get('username')
             email = request.POST.get('email')
@@ -292,7 +316,6 @@ def administrativo_dashboard(request):
             active_section = 'usuarios'
             usuarios = UserProfile.objects.select_related('user').all()
 
-        # Procesar creación manual de servicio
         elif "create_service" in request.POST:
             service_name = request.POST.get("service_name")
             description = request.POST.get("description")
@@ -319,7 +342,6 @@ def administrativo_dashboard(request):
             active_section = 'services'
             services = Service.objects.all()
 
-        # Procesar importación masiva mediante CSV
         elif "upload_csv" in request.POST:
             csv_file = request.FILES.get("csv_file")
             if csv_file:
@@ -328,7 +350,8 @@ def administrativo_dashboard(request):
                     data_set = csv_file.read().decode('UTF-8')
                     io_string = io.StringIO(data_set)
                     reader = csv.DictReader(io_string)
-                    expected_columns = ['name', 'description', 'type', 'price', 'insurance', 'duration', 'authorization']
+                    expected_columns = ['name', 'description', 'type', 'price', 'insurance', 'duration',
+                                        'authorization']
                     if not all(field in reader.fieldnames for field in expected_columns):
                         messages.error(
                             request,
@@ -354,7 +377,8 @@ def administrativo_dashboard(request):
                                 price = float(row.get("price"))
                                 insurance = row.get("insurance", "False").strip().lower() in ("true", "1", "yes")
                                 duration = int(row.get("duration"))
-                                authorization = row.get("authorization", "False").strip().lower() in ("true", "1", "yes")
+                                authorization = row.get("authorization", "False").strip().lower() in (
+                                    "true", "1", "yes")
                                 Service.objects.create(
                                     name=name,
                                     description=description,
@@ -381,10 +405,9 @@ def administrativo_dashboard(request):
             active_section = 'services'
             services = Service.objects.all()
 
-        # Procesar filtro del calendario semanal para un servicio con citas de lunes a viernes
         elif "filter_weekly_calendar" in request.POST:
             service_id = request.POST.get("service_id")
-            week_start_str = request.POST.get("week_start")  # Fecha que define la semana
+            week_start_str = request.POST.get("week_start")
             if service_id:
                 if week_start_str:
                     try:
@@ -393,9 +416,7 @@ def administrativo_dashboard(request):
                         selected_date = timezone.now().date()
                 else:
                     selected_date = timezone.now().date()
-                # Calcular el lunes de la semana (si se selecciona cualquier día, se ajusta al lunes)
                 monday = selected_date - timedelta(days=selected_date.weekday())
-                # Considerar citas solo de lunes a viernes (viernes = lunes + 4 días)
                 friday = monday + timedelta(days=4)
                 weekly_appointments = Appointment.objects.filter(
                     service_id=service_id,
@@ -414,7 +435,9 @@ def administrativo_dashboard(request):
         'appointments': appointments,
         'services': services,
         'weekly_appointments': weekly_appointments,
-        'active_section': active_section
+        'active_section': active_section,
+        'citas_canceladas': citas_canceladas,
+        'citas_realizadas': citas_realizadas
     })
 
 
@@ -426,6 +449,7 @@ def financiero_dashboard(request):
     return render(request, 'administration/financiero_dashboard.html', {
         'facturas': facturas
     })
+
 
 @login_required(login_url='login')
 def private(request):
@@ -456,6 +480,3 @@ def admin_dashboard(request):
             messages.success(request, f"Usuario '{username}' creado correctamente como {role}.")
 
     return render(request, 'administration/admin_dashboard.html')
-
-
-

@@ -5,154 +5,172 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Panel Administrativo</title>
     <style>
-    /* Reset y estilos base */
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #f4f7f9;
-      color: #333;
-      line-height: 1.6;
-    }
-    /* Contenedor principal: menú lateral + contenido */
-    .container {
-      display: flex;
-      min-height: 100vh;
-    }
-/* Menú lateral izquierdo */
-aside {
-  background: #2c3e50;
-  color: #ecf0f1;
-  width: 250px;
-  padding: 30px 20px;
-}
-aside h2 {
-  font-size: 1.5rem;
-  margin-bottom: 1.5rem;
-  text-align: center;
-}
-aside ul {
-  list-style: none;
-}
-aside ul li {
-  margin-bottom: 15px;
-}
-aside ul li a {
-  color: #ecf0f1;
-  text-decoration: none;
-  display: block;
-  padding: 10px 15px;
-  border-radius: 4px;
-  transition: background 0.3s;
-}
-aside ul li a:hover {
-  background: #34495e;
-}
-   .menu-link {
-  display: flex;
-  align-items: center;
-  gap: 10px; /* Espacio entre el icono y el texto */
-  padding: 10px 15px;
-  border-radius: 4px;
-  transition: background 0.3s;
-  color: #ecf0f1;
-  text-decoration: none;
-}
+        /* Reset y estilos base */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-.menu-link:hover {
-  background: #34495e;
-}
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f7f9;
+            color: #333;
+            line-height: 1.6;
+        }
 
-.menu-link .icon {
-  width: 20px;
-  height: 20px;
-  flex-shrink: 0;
-  color: #ecf0f1;
-}
+        /* Contenedor principal: menú lateral + contenido */
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
 
-    /* Área principal de contenido */
-    main {
-      flex: 1;
-      padding: 30px 40px;
-    }
-    main h1 {
-      margin-bottom: 20px;
-    }
-    /* Tarjetas para cada sección */
-    .card {
-      background: #fff;
-      padding: 20px;
-      margin-bottom: 20px;
-      border-radius: 8px;
-      border: 1px solid #ececec;
-      box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-    }
-    .card h3 {
-      margin-bottom: 15px;
-    }
-    /* Secciones de contenido, inicialmente ocultas salvo la primera */
-    .section {
-      display: none;
-    }
-    .section.active {
-      display: block;
-    }
-    .messages {
-      list-style: none;
-      margin-bottom: 15px;
-      padding: 10px;
-      background-color: #e0ffe0;
-      border: 1px solid #70c470;
-      color: #2d662d;
-      border-radius: 5px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-      margin-bottom: 15px;
-    }
-    table th, table td {
-      padding: 10px;
-      border: 1px solid #ccc;
-      text-align: left;
-    }
-    /* Formularios */
-    form label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: bold;
-    }
-    form input,
-    form select,
-    form textarea {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 15px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-    form button,
-    form input[type="submit"] {
-      background: #2c3e50;
-      border: none;
-      color: #fff;
-      padding: 10px 20px;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: background 0.3s;
-      margin-bottom: 15px;
-    }
-    form button:hover,
-    form input[type="submit"]:hover {
-      background: #34495e;
-    }
+        /* Menú lateral izquierdo */
+        aside {
+            background: #2c3e50;
+            color: #ecf0f1;
+            width: 250px;
+            padding: 30px 20px;
+        }
 
+        aside h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
 
+        aside ul {
+            list-style: none;
+        }
 
+        aside ul li {
+            margin-bottom: 15px;
+        }
+
+        aside ul li a {
+            color: #ecf0f1;
+            text-decoration: none;
+            display: block;
+            padding: 10px 15px;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+
+        aside ul li a:hover {
+            background: #34495e;
+        }
+
+        .menu-link {
+            display: flex;
+            align-items: center;
+            gap: 10px; /* Espacio entre el icono y el texto */
+            padding: 10px 15px;
+            border-radius: 4px;
+            transition: background 0.3s;
+            color: #ecf0f1;
+            text-decoration: none;
+        }
+
+        .menu-link:hover {
+            background: #34495e;
+        }
+
+        .menu-link .icon {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+            color: #ecf0f1;
+        }
+
+        /* Área principal de contenido */
+        main {
+            flex: 1;
+            padding: 30px 40px;
+        }
+
+        main h1 {
+            margin-bottom: 20px;
+        }
+
+        /* Tarjetas para cada sección */
+        .card {
+            background: #fff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border: 1px solid #ececec;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h3 {
+            margin-bottom: 15px;
+        }
+
+        /* Secciones de contenido, inicialmente ocultas salvo la primera */
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .messages {
+            list-style: none;
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #e0ffe0;
+            border: 1px solid #70c470;
+            color: #2d662d;
+            border-radius: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            margin-bottom: 15px;
+        }
+
+        table th, table td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: left;
+        }
+
+        /* Formularios */
+        form label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        form input,
+        form select,
+        form textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        form button,
+        form input[type="submit"] {
+            background: #2c3e50;
+            border: none;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-bottom: 15px;
+        }
+
+        form button:hover,
+        form input[type="submit"]:hover {
+            background: #34495e;
+        }
 
 
     </style>
@@ -311,7 +329,8 @@ aside ul li a:hover {
                         <label for="user_id">Selecciona usuario:</label>
                         <select name="user_id" id="user_id">
                             {% for profile in usuarios %}
-                            <option value="{{ profile.user.id }}">{{ profile.user.get_full_name }} ({{ profile.user.username }})</option>
+                            <option value="{{ profile.user.id }}">{{ profile.user.get_full_name }} ({{ profile.user.username }})
+                            </option>
                             {% endfor %}
                         </select>
                         <button type="submit" name="search" value="1">Buscar citas</button>
@@ -351,54 +370,115 @@ aside ul li a:hover {
                     <button type="submit">Validar citas seleccionadas</button>
                 </form>
                 {% endif %}
+
+                <!-- Citas canceladas -->
+                {% if citas_canceladas %}
+                <h3><b>CITAS CANCELADAS</b></h3>
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Usuario</th>
+                        <th>Servicio</th>
+                        <th>Fecha</th>
+                        <th>Hora</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for cita in citas_canceladas %}
+                    <tr>
+                        <td>{{ cita.user.username }}</td>
+                        <td>{{ cita.service.name }}</td>
+                        <td>{{ cita.fecha }}</td>
+                        <td>{{ cita.hora }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5">No hay citas canceladas.</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+
+                {% endif %}
+
+                <!-- Citas confirmadas -->
+                {% if citas_realizadas %}
+                <h3><b>CITAS REALIZADAS</b></h3>
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Usuario</th>
+                        <th>Servicio</th>
+                        <th>Fecha</th>
+                        <th>Hora</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for cita in citas_realizadas %}
+                    <tr>
+                        <td>{{ cita.user.username }}</td>
+                        <td>{{ cita.service.name }}</td>
+                        <td>{{ cita.fecha }}</td>
+                        <td>{{ cita.hora }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5">No hay citas realizadas.</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+
+                {% endif %}
                 <h3><b>CITAS PROGRAMADAS</b></h3>
                 <!-- Formulario para filtrar el calendario semanal por servicio y semana -->
-    <form method="post">
-      {% csrf_token %}
-      <label for="service_filter">Selecciona el servicio:</label>
-      <select name="service_id" id="service_filter" required>
-        <option value="">-- Seleccionar servicio --</option>
-        {% for s in services %}
-          <option value="{{ s.id }}">{{ s.name }}</option>
-        {% endfor %}
-      </select>
-      <label for="week_start">
-        Selecciona una fecha para definir la semana (se calculará el lunes de esa semana y se mostrarán las citas de lunes a viernes):
-      </label>
-      <input type="date" name="week_start" id="week_start">
-      <!-- Campo oculto para identificar la acción -->
-      <input type="hidden" name="filter_weekly_calendar" value="1">
-      <button type="submit">Ver Calendario Semanal</button>
-    </form>
+                <form method="post">
+                    {% csrf_token %}
+                    <label for="service_filter">Selecciona el servicio:</label>
+                    <select name="service_id" id="service_filter" required>
+                        <option value="">-- Seleccionar servicio --</option>
+                        {% for s in services %}
+                        <option value="{{ s.id }}">{{ s.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <label for="week_start">
+                        Selecciona una fecha para definir la semana (se calculará el lunes de esa semana y se mostrarán
+                        las citas de lunes a viernes):
+                    </label>
+                    <input type="date" name="week_start" id="week_start">
+                    <!-- Campo oculto para identificar la acción -->
+                    <input type="hidden" name="filter_weekly_calendar" value="1">
+                    <button type="submit">Ver Calendario Semanal</button>
+                </form>
 
-    <!-- Calendario Semanal: se muestra si existen citas filtradas -->
-    {% if weekly_appointments %}
-      <h4>Calendario Semanal</h4>
-      <table>
-        <thead>
-          <tr>
-            <th>Día</th>
-            <th>Hora</th>
-            <th>Tipo de Servicio</th>
-            <th>Paciente</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for appointment in weekly_appointments %}
-            <tr>
-              <td>{{ appointment.fecha|date:"D d M Y" }}</td>
-              <td>{{ appointment.hora|time:"H:i" }}</td>
-              <td>{{ appointment.service.type }}</td>
-              <td>{{ appointment.user.username }}</td>
-            </tr>
-          {% empty %}
-            <tr>
-              <td colspan="4">No hay citas programadas para este servicio en la semana seleccionada.</td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    {% endif %}
+                <!-- Calendario Semanal: se muestra si existen citas filtradas -->
+                {% if weekly_appointments %}
+                <h4>Calendario Semanal</h4>
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Día</th>
+                        <th>Hora</th>
+                        <th>Tipo de Servicio</th>
+                        <th>Paciente</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for appointment in weekly_appointments %}
+                    <tr>
+                        <td>{{ appointment.fecha|date:"D d M Y" }}</td>
+                        <td>{{ appointment.hora|time:"H:i" }}</td>
+                        <td>{{ appointment.service.type }}</td>
+                        <td>{{ appointment.user.username }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4">No hay citas programadas para este servicio en la semana seleccionada.</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                {% endif %}
             </div>
         </div>
 
@@ -513,15 +593,12 @@ aside ul li a:hover {
 
 <script>
     function showSection(sectionId) {
-      var sections = document.querySelectorAll('.section');
-      sections.forEach(function(section) {
-        section.classList.remove('active');
-      });
-      document.getElementById(sectionId).classList.add('active');
+        var sections = document.querySelectorAll('.section');
+        sections.forEach(function (section) {
+            section.classList.remove('active');
+        });
+        document.getElementById(sectionId).classList.add('active');
     }
-
-
-
 
 
 </script>

@@ -25,6 +25,28 @@ class Appointment(models.Model):
         return f"{self.user} - {self.service.name} - {self.fecha} {self.hora}"
 
 
+class CanceledAppointment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    service = models.ForeignKey("Service", on_delete=models.SET_NULL, null=True)
+    fecha = models.DateField()
+    hora = models.TimeField()
+    cancelada_en = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Cancelada: {self.user} - {self.service} - {self.fecha} {self.hora}"
+
+
+class CompletedAppointment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    service = models.ForeignKey("Service", on_delete=models.SET_NULL, null=True)
+    fecha = models.DateField()
+    hora = models.TimeField()
+    confirmada_en = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Realizada: {self.user} - {self.service} - {self.fecha} {self.hora}"
+
+
 class Service(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(max_length=100)
@@ -79,4 +101,3 @@ class Invoice(models.Model):
 
     def __str__(self):
         return f"Factura #{self.id} — {self.appointment.service.name} ({self.amount} €)"
-
