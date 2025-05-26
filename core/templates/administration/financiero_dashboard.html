@@ -236,14 +236,74 @@
             </div>
         </div>
         <div id="analisis" class="section {% if active_section == 'analisis' %}active{% endif %}">
-            <div class="card">
-                <h3>Facturas</h3>
-            </div>
-        </div>
+          <div class="card">
+            <h3>Análisis Financiero</h3>
+            <form method="post">
+              {% csrf_token %}
+              <input type="hidden" name="analisis" value="1">
+              <div class="filter-row">
+                <label for="period">Periodo:</label>
+                <select name="period" id="period">
+                  <option value="monthly" {% if selected_period == 'monthly' %}selected{% endif %}>Mensual</option>
+                  <option value="annual" {% if selected_period == 'annual' %}selected{% endif %}>Anual</option>
+                </select>
+                <input type="submit" value="Actualizar">
+              </div>
+            </form>
 
+            {% if line_labels and line_data %}
+              <div class="chart-container">
+                <canvas id="lineChart"></canvas>
+              </div>
+            {% else %}
+              <p class="text-center">No hay datos para mostrar en el gráfico de líneas.</p>
+            {% endif %}
+
+            <h4 class="mt-4">Servicios más rentables ({{ selected_period }})</h4>
+            <table>
+              <thead>
+                <tr><th>Servicio</th><th>Total (€)</th></tr>
+              </thead>
+              <tbody>
+                {% for r in ranking_services %}
+                  <tr><td>{{ r.service }}</td><td>{{ r.total }}</td></tr>
+                {% empty %}
+                  <tr><td colspan="2" class="text-center">No hay datos.</td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
+
+            <h4 class="mt-4">Distribución de facturación</h4>
+            {% if pie_labels and pie_data %}
+              <div class="chart-container">
+                <canvas id="pieChart"></canvas>
+              </div>
+            {% else %}
+              <p class="text-center">No hay datos para mostrar en el gráfico circular.</p>
+            {% endif %}
+          </div>
+        </div>
     </main>
 </div>
-
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    if ({{ line_labels|length }} > 0) {
+      new Chart(document.getElementById('lineChart').getContext('2d'), {
+        type: 'line',
+        data: { labels: {{ line_labels|safe }}, datasets: [{ label: 'Facturación', data: {{ line_data|safe }}, fill: false, tension: 0.1 }] },
+        options: { responsive: true, maintainAspectRatio: false }
+      });
+    }
+    if ({{ pie_labels|length }} > 0) {
+      new Chart(document.getElementById('pieChart').getContext('2d'), {
+        type: 'pie',
+        data: { labels: {{ pie_labels|safe }}, datasets: [{ data: {{ pie_data|safe }} }] },
+        options: { responsive: true, maintainAspectRatio: false }
+      });
+    }
+  });
+</script>
 <script>
     function showSection(sectionId) {
         const sections = document.querySelectorAll('.section');

@@ -16,6 +16,10 @@ from datetime import datetime, timedelta, time
 from zoneinfo import ZoneInfo
 from django.utils.timezone import make_aware, now
 
+from django.db.models import Sum, F
+from django.db.models.functions import TruncMonth, TruncYear
+
+
 import dateparser
 
 
@@ -472,26 +476,92 @@ def administrativo_dashboard(request):
         'citas_realizadas': citas_realizadas
     })
 
-
 @staff_login_required
 @role_required('finance')
 def financiero_dashboard(request):
     facturas = Invoice.objects.all().order_by('-issued_date')
     active_section = 'facturas'
 
+    line_labels = []
+    line_data = []
+    ranking_services = []
+    pie_labels = []
+    pie_data = []
+    period = 'monthly'
+
     if request.method == "POST":
         if "facturas" in request.POST:
             facturas = Invoice.objects.all().order_by('-issued_date')
             active_section = 'facturas'
         elif "analisis" in request.POST:
-            print("Se ha seleccionada Analisis")
             active_section = 'analisis'
+            period = request.POST.get('period', 'monthly')
+
+            if period == 'monthly':
+                qs = (
+                    Invoice.objects
+                    .annotate(period=TruncMonth('issued_date'))
+                    .values('period')
+                    .annotate(total=Sum('amount'))
+                    .order_by('period')
+                )
+            else:
+                qs = (
+                    Invoice.objects
+                    .annotate(period=TruncYear('issued_date'))
+                    .values('period')
+                    .annotate(total=Sum('amount'))
+                    .order_by('period')
+                )
+
+            line_labels = [
+                entry['period'].strftime('%b %Y') if period == 'monthly' else entry['period'].year
+                for entry in qs
+            ]
+            line_data = [float(entry['total']) for entry in qs]
+
+            if qs:
+                latest = qs.last()['period']
+                year = latest.year
+                month = latest.month if period == 'monthly' else None
+            else:
+                year = month = None
+
+            service_qs = (
+                Invoice.objects
+                .values('appointment__service__name')
+                .annotate(total=Sum('amount'))
+                .order_by('-total')
+            )
+            if year:
+                service_qs = service_qs.filter(
+                    issued_date__year=year,
+                    **({'issued_date__month': month} if month else {})
+                )
+
+            ranking_services = [
+                {'service': s['appointment__service__name'], 'total': float(s['total'])}
+                for s in service_qs
+            ]
+
+            pie_qs = (
+                Invoice.objects
+                .values('appointment__service__name')
+                .annotate(total=Sum('amount'))
+            )
+            pie_labels = [p['appointment__service__name'] for p in pie_qs]
+            pie_data = [float(p['total']) for p in pie_qs]
 
     return render(request, 'administration/financiero_dashboard.html', {
         'facturas': facturas,
-        'active_section': active_section
+        'active_section': active_section,
+        'line_labels': line_labels,
+        'line_data': line_data,
+        'ranking_services': ranking_services,
+        'pie_labels': pie_labels,
+        'pie_data': pie_data,
+        'selected_period': period,
     })
-
 
 @login_required(login_url='login')
 def private(request):
