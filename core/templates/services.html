@@ -25,25 +25,63 @@
         <h1 class="signup-title">Servicios Disponibles</h1>
     </header>
 
+    <div class="search-filters mb-4">
+        <form method="get" action="">
+            <div class="row g-3 align-items-baseline">
+                <!-- Columna Búsqueda -->
+                <div class="col-md-4 d-flex align-items-baseline">
+                    <label for="search" class="form-label mb-0 me-2">Buscar servicio </label>
+                    <input type="text"
+                           class="form-control"
+                           id="search"
+                           name="search"
+                           placeholder="Escribe el nombre o palabra clave..."
+                           style="flex:1;">
+                </div>
+
+                <!-- Columna Tipo -->
+                <div class="col-md-4 d-flex align-items-baseline ">
+                    <label for="type" class="form-label mb-0 me-2">Tipo de servicio </label>
+                    <select class="form-select" id="type" name="type">
+                        <option value="">Todos</option>
+                        <option value="Consulta General">Consulta General</option>
+                        <option value="Consulta Especialidad">Consulta Especialidad</option>
+                        <option value="Prueba Diagnóstica">Prueba Diagnóstica</option>
+                        <option value="Cirugía Menor">Cirugía Menor</option>
+                        <option value="Prevención">Prevención</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col text-center">
+                    <button type="submit" class="btn btn-primary">Filtrar</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
     <div class="row">
         {% for service in services %}
         <div class="col-md-4 mb-4">
-            <div class="card">
+            <div class="card service-card h-100">
                 <div class="card-body text-center">
-                    <h5 class="card-title">{{ service.name }}</h5>
+                    <h5 class="card-title"><strong>{{ service.name }}</strong></h5>
                     <p class="card-text">{{ service.description }}</p>
-                    <p class="card-text">Tipo de servicio: {{ service.type }}</p>
-                    <p class="card-text">Precio: {{ service.price }}€</p>
-                    <p class="card-text">Incluido en Mútua: {{ service.insurance|yesno:"Sí,No" }}</p>
-                    <p class="card-text">Duración: {{ service.duration }} minutos</p>
-                    <a href="{% url 'select_service' service.name %}">Seleccionar</a>
+                    <p class="card-text"><strong>Tipo:</strong> {{ service.type }}</p>
+                    <p class="card-text"><strong>Precio:</strong> {{ service.price }}€</p>
+                    <p class="card-text"><strong>Mútua:</strong> {{ service.insurance|yesno:"Sí,No" }}</p>
+                    <p class="card-text"><strong>Duración:</strong> {{ service.duration }} minutos</p>
+                    <a href="{% url 'select_service' service.name %}" class="btn btn-outline-primary mt-2">Seleccionar</a>
                 </div>
             </div>
         </div>
         {% empty %}
-        <li class="list-group-item list-group-item-warning text-muted text-center mx-auto mt-5">No hay servicios
-            disponibles.
-        </li>
+        <div class="col-12">
+            <div class="alert alert-warning text-center">
+                No hay servicios disponibles.
+            </div>
+        </div>
         {% endfor %}
     </div>
 </div>

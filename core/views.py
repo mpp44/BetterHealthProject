@@ -6,7 +6,7 @@ from django.http import HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib import messages
 from .utils import staff_login_required, role_required
-
+from django.db.models import Q
 from .models import *
 from django.utils import timezone
 from .forms import CustomUserCreationForm
@@ -76,16 +76,44 @@ def check_insurance(request):
 
 @login_required
 def services(request):
-    services_db = Service.objects.all()
-    services_db = [s for s in services_db if not s.insurance]
+    # Partimos filtrando los servicios sin mútua
+    services_db = Service.objects.filter(insurance=False)
+
+    # Extraemos parámetros enviados por GET
+    search_query = request.GET.get('search', '')
+    type_filter = request.GET.get('type', '')
+
+    # Aplicamos el filtro de búsqueda: nombre o descripción que contengan el texto
+    if search_query:
+        services_db = services_db.filter(
+            Q(name__icontains=search_query) | Q(description__icontains=search_query)
+        )
+
+    # Filtramos por el tipo de servicio si se ha seleccionado uno
+    if type_filter:
+        services_db = services_db.filter(type__iexact=type_filter)
 
     return render(request, "services.html", {"services": services_db})
 
 
 @login_required
 def insurance_services(request):
-    services_db = Service.objects.all()
-    services_db = [s for s in services_db if s.insurance]
+    # Partimos filtrando los servicios que tienen mútua
+    services_db = Service.objects.filter(insurance=True)
+
+    # Extraemos los parámetros GET para búsqueda y filtrado
+    search_query = request.GET.get('search', '')
+    type_filter = request.GET.get('type', '')
+
+    # Filtramos por búsqueda en nombre o descripción
+    if search_query:
+        services_db = services_db.filter(
+            Q(name__icontains=search_query) | Q(description__icontains=search_query)
+        )
+
+    # Filtramos por tipo de servicio
+    if type_filter:
+        services_db = services_db.filter(type__iexact=type_filter)
 
     return render(request, "services.html", {"services": services_db})
 
@@ -276,7 +304,7 @@ def administrativo_dashboard(request):
             for appointment in confirmed_appointments:
                 if appointment.service and not Invoice.objects.filter(appointment=appointment).exists():
                     Invoice.objects.create(
-                        appointment=appointment,
+                        appointment=CompletedAppointment(user=request.user).last(),
                         amount=appointment.service.price
                     )
                     appointment.delete()
@@ -444,10 +472,21 @@ def administrativo_dashboard(request):
 @staff_login_required
 @role_required('finance')
 def financiero_dashboard(request):
+
     facturas = Invoice.objects.all().order_by('-issued_date')
+    active_section = 'facturas'
+
+    if request.method == "POST":
+        if "facturas" in request.POST:
+            facturas = Invoice.objects.all().order_by('-issued_date')
+            active_section = 'facturas'
+        elif "analisis" in request.POST:
+            print("Se ha seleccionada Analisis")
+            active_section = 'analisis'
 
     return render(request, 'administration/financiero_dashboard.html', {
-        'facturas': facturas
+        'facturas': facturas,
+        'active_section': active_section
     })
 
 
@@ -464,19 +503,55 @@ def admin_logout(request):
 @staff_login_required
 @role_required('superadmin')
 def admin_dashboard(request):
+    active_section = 'create-superuser'
+
     if request.method == "POST":
-        username = request.POST.get("username")
-        password = request.POST.get("password")
-        role = request.POST.get("role")
+        if "create-superuser" in request.POST:
+            username = request.POST.get("username")
+            password = request.POST.get("password")
+            role = request.POST.get("role")
 
-        if role not in ['admin', 'finance']:
-            messages.error(request, "Rol inválido.")
-        elif StaffUser.objects.filter(username=username).exists():
-            messages.error(request, "El nombre de usuario ya existe.")
-        else:
-            new_user = StaffUser(username=username, role=role)
-            new_user.set_password(password)
-            new_user.save()
-            messages.success(request, f"Usuario '{username}' creado correctamente como {role}.")
+            if role not in ['admin', 'finance']:
+                messages.error(request, "Rol inválido.")
+            elif StaffUser.objects.filter(username=username).exists():
+                messages.error(request, "El nombre de usuario ya existe.")
+            else:
+                new_user = StaffUser(username=username, role=role)
+                new_user.set_password(password)
+                new_user.save()
+                messages.success(request, f"Usuario '{username}' creado correctamente como {role}.")
+            active_section = 'create-superuser'
 
-    return render(request, 'administration/admin_dashboard.html')
+        elif "delete_user" in request.POST:
+            user_type = request.POST.get("user_type")
+            user_id = request.POST.get("delete_user")
+
+            if user_type == "staff":
+                try:
+                    staff_member = StaffUser.objects.get(id=user_id)
+                    staff_member.delete()
+                    messages.success(request,
+                                     f"Usuario administrativo '{staff_member.username}' eliminado correctamente.")
+                except StaffUser.DoesNotExist:
+                    messages.error(request, "El usuario administrativo no existe.")
+
+            elif user_type == "patient":
+                try:
+                    patient = UserProfile.objects.get(id=user_id)
+                    # Si deseas eliminar también el User asociado:
+                    patient.user.delete()
+                    messages.success(request, f"Paciente '{patient.user.username}' eliminado correctamente.")
+                    # Si prefieres solo eliminar el perfil, usar: patient.delete()
+                except UserProfile.DoesNotExist:
+                    messages.error(request, "El paciente no existe.")
+            active_section = 'users'
+
+    # Cargamos las listas de usuarios para mostrar en las tablas.
+    admins = StaffUser.objects.all().order_by("username")
+    patients = UserProfile.objects.select_related('user').all().order_by("user__username")
+
+    return render(request, 'administration/admin_dashboard.html', {
+        "active_section": active_section,
+        "admins": admins,
+        "patients": patients,
+    })

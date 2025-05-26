@@ -1,38 +1,54 @@
 {% extends "base.html" %}
-
 {% block content %}
 <div class="container py-4">
-    <header class="mb-4">
+   <header class="mb-4">
         <h1 class="signup-title">Historial de Citas</h1>
     </header>
 
-    {% if appointments %}
-    <div class="row row-cols-1 g-4">
-        {% for appointment in appointments %}
-        <div class="col">
-            <div class="card border rounded-3 shadow-lg bg-white">
-                <div class="card-body">
-                    <h4 class="card-title text-primary">{{ appointment.service.name }}</h4>
-                    <p class="card-text fs-6 mb-3">
-                        <strong>Fecha:</strong> {{ appointment.fecha|date:"l d/m/Y" }}<br>
-                        <strong>Hora:</strong> {{ appointment.hora|time:"H:i" }}
-                    </p>
-                    <div class="d-flex gap-3">
-                        <a href="{% url 'edit_appointment' appointment.id %}" class="btn btn-warning btn-lg px-4">Editar</a>
-                        <form method="post" action="{% url 'delete_appointment' appointment.id %}" class="d-inline">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-danger btn-lg px-4">Cancelar</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% endfor %}
+  {% if appointments %}
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Servicio</th>
+              <th scope="col">Fecha</th>
+              <th scope="col">Hora</th>
+              <th scope="col" class="text-end">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for appointment in appointments %}
+            <tr>
+              <th scope="row">{{ forloop.counter }}</th>
+              <td>{{ appointment.service.name }}</td>
+              <td>{{ appointment.fecha|date:"d/m/Y" }}</td>
+              <td>{{ appointment.hora|time:"H:i" }}</td>
+              <td class="text-end">
+                <a href="{% url 'edit_appointment' appointment.id %}" class="btn btn-sm btn-outline-primary me-2">
+                  <i class="bi bi-pencil-fill"></i> Editar
+                </a>
+                <form method="post" action="{% url 'delete_appointment' appointment.id %}" class="d-inline">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-sm btn-outline-danger">
+                    <i class="bi bi-trash-fill"></i> Cancelar
+                  </button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     </div>
-    {% else %}
-    <div class="alert alert-warning text-center mt-5">
-        No se ha reservado ninguna cita.
-    </div>
-    {% endif %}
+  </div>
+  {% else %}
+  <div class="alert alert-warning text-center mt-5">
+    <i class="bi bi-calendar-x" style="font-size: 2rem;"></i>
+    <p class="mt-3 mb-0">No se ha reservado ninguna cita.</p>
+  </div>
+  {% endif %}
 </div>
 {% endblock %}

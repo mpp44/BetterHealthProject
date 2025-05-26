@@ -20,23 +20,28 @@
             display: flex;
             min-height: 100vh;
         }
+        /* Menú lateral izquierdo */
         aside {
             background: #2c3e50;
             color: #ecf0f1;
             width: 250px;
             padding: 30px 20px;
         }
+
         aside h2 {
             font-size: 1.5rem;
             margin-bottom: 1.5rem;
             text-align: center;
         }
+
         aside ul {
             list-style: none;
         }
+
         aside ul li {
             margin-bottom: 15px;
         }
+
         aside ul li a {
             color: #ecf0f1;
             text-decoration: none;
@@ -45,8 +50,31 @@
             border-radius: 4px;
             transition: background 0.3s;
         }
+
         aside ul li a:hover {
             background: #34495e;
+        }
+
+        .menu-link {
+            display: flex;
+            align-items: center;
+            gap: 10px; /* Espacio entre el icono y el texto */
+            padding: 10px 15px;
+            border-radius: 4px;
+            transition: background 0.3s;
+            color: #ecf0f1;
+            text-decoration: none;
+        }
+
+        .menu-link:hover {
+            background: #34495e;
+        }
+
+        .menu-link .icon {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+            color: #ecf0f1;
         }
         main {
             flex: 1;
@@ -133,21 +161,50 @@
 <body>
 <div class="container">
     <aside>
-        <h2>Menú</h2>
+        <h2>Better Health</h2>
         <ul>
-            <li><a href="#" onclick="showSection('facturas')">Facturas</a></li>
-            <li><a href="#" onclick="showSection('analisis')">Análisis</a></li>
-            <li><a href="{% url 'admin_logout' %}">Cerrar sesión</a></li>
+            <li>
+                <a href="#" onclick="showSection('facturas')" class="menu-link">
+                    <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true"
+                         xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                         viewBox="0 0 24 24">
+                        <path fill-rule="evenodd"
+                              d="M5.617 2.076a1 1 0 0 1 1.09.217L8 3.586l1.293-1.293a1 1 0 0 1 1.414 0L12 3.586l1.293-1.293a1 1 0 0 1 1.414 0L16 3.586l1.293-1.293A1 1 0 0 1 19 3v18a1 1 0 0 1-1.707.707L16 20.414l-1.293 1.293a1 1 0 0 1-1.414 0L12 20.414l-1.293 1.293a1 1 0 0 1-1.414 0L8 20.414l-1.293 1.293A1 1 0 0 1 5 21V3a1 1 0 0 1 .617-.924ZM9 7a1 1 0 0 0 0 2h6a1 1 0 1 0 0-2H9Zm0 4a1 1 0 1 0 0 2h6a1 1 0 1 0 0-2H9Zm0 4a1 1 0 1 0 0 2h6a1 1 0 1 0 0-2H9Z"
+                              clip-rule="evenodd"/>
+                    </svg>
+                    <span><b>Facturas</b></span>
+                </a>
+            </li>
+            <li>
+                <a href="#" onclick="showSection('analisis')" class="menu-link">
+                    <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true"
+                         xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                         viewBox="0 0 24 24">
+                        <path fill-rule="evenodd"
+                              d="M9 15a6 6 0 1 1 12 0 6 6 0 0 1-12 0Zm3.845-1.855a2.4 2.4 0 0 1 1.2-1.226 1 1 0 0 1 1.992-.026c.426.15.809.408 1.111.749a1 1 0 1 1-1.496 1.327.682.682 0 0 0-.36-.213.997.997 0 0 1-.113-.032.4.4 0 0 0-.394.074.93.93 0 0 0 .455.254 2.914 2.914 0 0 1 1.504.9c.373.433.669 1.092.464 1.823a.996.996 0 0 1-.046.129c-.226.519-.627.94-1.132 1.192a1 1 0 0 1-1.956.093 2.68 2.68 0 0 1-1.227-.798 1 1 0 1 1 1.506-1.315.682.682 0 0 0 .363.216c.038.009.075.02.111.032a.4.4 0 0 0 .395-.074.93.93 0 0 0-.455-.254 2.91 2.91 0 0 1-1.503-.9c-.375-.433-.666-1.089-.466-1.817a.994.994 0 0 1 .047-.134Zm1.884.573.003.008c-.003-.005-.003-.008-.003-.008Zm.55 2.613s-.002-.002-.003-.007a.032.032 0 0 1 .003.007ZM4 14a1 1 0 0 1 1 1v4a1 1 0 1 1-2 0v-4a1 1 0 0 1 1-1Zm3-2a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1Zm6.5-8a1 1 0 0 1 1-1H18a1 1 0 0 1 1 1v3a1 1 0 1 1-2 0v-.796l-2.341 2.049a1 1 0 0 1-1.24.06l-2.894-2.066L6.614 9.29a1 1 0 1 1-1.228-1.578l4.5-3.5a1 1 0 0 1 1.195-.025l2.856 2.04L15.34 5h-.84a1 1 0 0 1-1-1Z"
+                              clip-rule="evenodd"/>
+                    </svg>
+
+                    <span><b>Análisis</b></span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'admin_logout' %}" class="menu-link">
+                    <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true"
+                         xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M18 18V6h-5v12h5Zm0 0h2M4 18h2.5m3.5-5.5V12M6 6l7-2v16l-7-2V6Z"/>
+                    </svg>
+                    <span>Cerrar sesión</span>
+                </a>
+            </li>
         </ul>
     </aside>
     <main>
         <h1>Bienvenido al Panel Financiero</h1>
-
-        <div id="facturas" class="section active">
+        <div id="facturas" class="section {% if active_section == 'facturas' %}active{% endif %}">
             <div class="card">
                 <h3>Facturas</h3>
-                <p>Aquí puedes visualizar y gestionar todas las facturas generadas.</p>
-
                 <table>
                     <thead>
                     <tr>
@@ -176,6 +233,11 @@
                     {% endfor %}
                     </tbody>
                 </table>
+            </div>
+        </div>
+        <div id="analisis" class="section {% if active_section == 'analisis' %}active{% endif %}">
+            <div class="card">
+                <h3>Facturas</h3>
             </div>
         </div>
 
