@@ -302,28 +302,32 @@ def administrativo_dashboard(request):
             Appointment.objects.filter(id__in=appointment_ids).update(confirmada=True)
             confirmed_appointments = Appointment.objects.filter(id__in=appointment_ids)
             for appointment in confirmed_appointments:
-                if appointment.service and not Invoice.objects.filter(appointment=appointment).exists():
-                    Invoice.objects.create(
-                        appointment=CompletedAppointment(user=request.user).last(),
-                        amount=appointment.service.price
-                    )
-                    appointment.delete()
-
+                if appointment.service:
                     CompletedAppointment.objects.create(
                         user=appointment.user,
                         service=appointment.service,
                         fecha=appointment.fecha,
                         hora=appointment.hora
                     )
+
+                    Invoice.objects.create(
+                        appointment=CompletedAppointment.objects.filter(user=appointment.user).last(),
+                        amount=appointment.service.price
+                    )
+
+                    appointment.delete()
             messages.success(request, "Las citas seleccionadas han sido validadas y facturadas.")
             active_section = 'citas'
 
         elif "search" in request.POST:
             user_id = request.POST.get("user_id")
             selected_user = get_object_or_404(User, pk=user_id)
-            appointments = Appointment.objects.filter(user=selected_user).select_related('service').order_by('fecha','hora')
-            citas_canceladas = CanceledAppointment.objects.filter(user=selected_user).select_related('service').order_by('fecha','hora')
-            citas_realizadas = CompletedAppointment.objects.filter(user=selected_user).select_related('service').order_by('fecha','hora')
+            appointments = Appointment.objects.filter(user=selected_user).select_related('service').order_by('fecha',
+                                                                                                             'hora')
+            citas_canceladas = CanceledAppointment.objects.filter(user=selected_user).select_related(
+                'service').order_by('fecha', 'hora')
+            citas_realizadas = CompletedAppointment.objects.filter(user=selected_user).select_related(
+                'service').order_by('fecha', 'hora')
             active_section = 'citas'
 
         elif "create_user" in request.POST:
@@ -472,7 +476,6 @@ def administrativo_dashboard(request):
 @staff_login_required
 @role_required('finance')
 def financiero_dashboard(request):
-
     facturas = Invoice.objects.all().order_by('-issued_date')
     active_section = 'facturas'
 

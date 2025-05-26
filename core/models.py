@@ -94,7 +94,7 @@ class StaffUser(models.Model):
 
 
 class Invoice(models.Model):
-    appointment = models.ForeignKey(Appointment, on_delete=models.CASCADE)
+    appointment = models.ForeignKey(CompletedAppointment, on_delete=models.CASCADE)
     issued_date = models.DateField(auto_now_add=True)
     amount = models.DecimalField(max_digits=8, decimal_places=2)
     is_paid = models.BooleanField(default=False)
