@@ -1,27 +1,79 @@
 {% extends "base.html" %}
-
 {% block content %}
-<div class="container">
-    <header class="text-center my-4">
-        <h1  class="signup-title">Available Schedules</h1>
-    </header>
+<div class="container mt-5">
+    <div class="timeline-steps">
+        <div class="step completed">
+            <div class="step-circle"></div>
+            <span class="step-label">Acción</span>
+        </div>
+        <div class="step completed">
+            <div class="step-circle"></div>
+            <span class="step-label">Cobertura</span>
+        </div>
+        <div class="step completed">
+            <div class="step-circle"></div>
+            <span class="step-label">Servicio</span>
+        </div>
+        <div class="step current">
+            <div class="step-circle"></div>
+            <span class="step-label">Fecha y Hora</span>
+        </div>
+    </div>
+
+    <h2>Horarios para: {{ service.name }}</h2>
 
     <div class="row">
-        {% for schedule in schedules %}
-        <div class="col-md-4 mb-4">
-            <div class="card">
-                <div class="card-body text-center">
-                    <p class="card-text">Día: {{ schedule.get_weekday_display }}</p>
-                    <p class="card-text">Hora: {{ schedule.time|time:"H:i" }}</p>
-                    <a href="{% url 'select_schedule' schedule.id%}">Seleccionar</a>
-                </div>
-            </div>
-        </div>
-        {% empty %}
-        <div class="col-12 text-center">
-            <p class="list-group-item-warning text-muted">No hay horarios disponibles</p>
-        </div>
-        {% endfor %}
+    <div class="col-md-6 mb-4">
+      <label for="fecha" class="form-label">Selecciona una fecha:</label>
+      <input type="date"
+             id="fecha"
+             name="fecha"
+             class="form-control mb-3"
+             value="{{ fecha|date:'Y-m-d' }}"
+             min="{{ today|date:'Y-m-d' }}"
+             onchange="validarFecha(this)">
+
+      <div id="calendar"></div>
     </div>
+
+    <div class="col-md-6">
+      {% if fecha %}
+      <h5 class="mb-3">Horarios disponibles para el {{ fecha|date:"l d/m/Y" }}</h5>
+
+      {% if horarios %}
+      <div class="list-group">
+        {% for hora in horarios %}
+        <form method="post" action="{% url 'preconfirm_booking' service.id %}" class="mb-2">
+          {% csrf_token %}
+          <input type="hidden" name="fecha" value="{{ fecha }}">
+          <input type="hidden" name="hora" value="{{ hora }}">
+          <button type="submit" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+            {{ hora|time:"H:i" }}
+            <i class="bi bi-clock"></i>
+          </button>
+        </form>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p class="text-muted">No hay horarios disponibles para este día.</p>
+      {% endif %}
+      {% endif %}
+    </div>
+  </div>
 </div>
+
+<script>
+    function validarFecha(input) {
+    const valor = input.value;
+    const seleccion = new Date(valor);
+    const dia = seleccion.getDay();
+
+    if (dia === 0 || dia === 6) {
+        input.value = "";
+        alert("Por favor, selecciona un día laborable.");
+    } else {
+        window.location.href = `?fecha=${valor}`;
+    }
+    }
+</script>
 {% endblock %}

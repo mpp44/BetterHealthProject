@@ -1,19 +1,50 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils.timezone import now
+from django.contrib.auth.hashers import make_password, check_password
 
 
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    numero_afiliado = models.CharField(max_length=50, blank=True, null=True)
+    fecha_nacimiento = models.DateField(blank=True, null=True)
 
-# Create your models here.
+    def __str__(self):
+        return f"Perfil de {self.user.username}"
+
 
 class Appointment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    insurance = models.BooleanField(default=False)
-    service = models.ForeignKey("Service", on_delete=models.CASCADE, null=True)
-    schedule = models.ForeignKey("Schedule", on_delete=models.CASCADE, null=True)
-    date = models.DateField(null=True)
+    service = models.ForeignKey("Service", on_delete=models.CASCADE, blank=True, null=True)
+    fecha = models.DateField(blank=True, null=True)
+    hora = models.TimeField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    confirmada = models.BooleanField(default=False)  # Campo añadido para la validación
 
     def __str__(self):
-        return f"Appointment for {self.user.username} on {self.date} at {self.schedule.time}"
+        return f"{self.user} - {self.service.name} - {self.fecha} {self.hora}"
+
+
+class CanceledAppointment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    service = models.ForeignKey("Service", on_delete=models.SET_NULL, null=True)
+    fecha = models.DateField()
+    hora = models.TimeField()
+    cancelada_en = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Cancelada: {self.user} - {self.service} - {self.fecha} {self.hora}"
+
+
+class CompletedAppointment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    service = models.ForeignKey("Service", on_delete=models.SET_NULL, null=True)
+    fecha = models.DateField()
+    hora = models.TimeField()
+    confirmada_en = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Realizada: {self.user} - {self.service} - {self.fecha} {self.hora}"
 
 
 class Service(models.Model):
@@ -29,20 +60,44 @@ class Service(models.Model):
         return f"Service {self.name} costs {self.price}"
 
 
-class Schedule(models.Model):
-    service = models.ForeignKey("Service", on_delete=models.CASCADE, null=True)
-    weekday = models.IntegerField(choices=[
-        (0, "Lunes"),
-        (1, "Martes"),
-        (2, "Miércoles"),
-        (3, "Jueves"),
-        (4, "Viernes"),
-        (5, "Sábado"),
-        (6, "Domingo"),
-    ])
-    time = models.TimeField()
-    available = models.BooleanField(default=True)
+class TempBooking(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    service = models.ForeignKey('Service', on_delete=models.CASCADE)
+    fecha = models.DateField()
+    hora = models.TimeField()
+    reserved_at = models.DateTimeField(auto_now_add=True)
+
+    def is_expired(self):
+        from django.utils.timezone import now
+        return now() > self.reserved_at + timedelta(minutes=1)
+
+
+class StaffUser(models.Model):
+    ROLE_CHOICES = [
+        ('superadmin', 'Super Administrador'),
+        ('admin', 'Administrativo'),
+        ('finance', 'Financiero'),
+    ]
+
+    username = models.CharField(max_length=150, unique=True)
+    password = models.CharField(max_length=128)
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES)
+
+    def set_password(self, raw_password):
+        self.password = make_password(raw_password)
+
+    def check_password(self, raw_password):
+        return check_password(raw_password, self.password)
 
     def __str__(self):
-        return f"{self.get_weekday_display()} at {self.time} - {self.service.name}"
+        return f"{self.username} ({self.role})"
 
+
+class Invoice(models.Model):
+    appointment = models.ForeignKey(CompletedAppointment, on_delete=models.CASCADE)
+    issued_date = models.DateField(auto_now_add=True)
+    amount = models.DecimalField(max_digits=8, decimal_places=2)
+    is_paid = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Factura #{self.id} — {self.appointment.service.name} ({self.amount} €)"

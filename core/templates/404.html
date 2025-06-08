@@ -2,38 +2,38 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Contenido en Desarrollo | Better Health</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
-  <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
+    <meta charset="UTF-8">
+    <title>Contenido en Desarrollo | Better Health</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
 </head>
 <body>
 
-  <nav class="navbar navbar-light bg-white py-3">
+<nav class="navbar navbar-light bg-white py-3">
     <div class="container d-flex justify-content-between align-items-center">
-      <a class="navbar-brand font-weight-bold text-primary" href="{% url 'home' %}">Better Health</a>
-      <a class="btn btn-outline-primary" href="{% url 'home' %}">Volver al Inicio</a>
+        <a class="navbar-brand font-weight-bold text-primary" href="{% url 'home' %}">Better Health</a>
+        <a class="btn btn-outline-primary" href="{% url 'home' %}">Volver al Inicio</a>
     </div>
-  </nav>
+</nav>
 
-  <section class="section text-center">
+<section class="section text-center">
     <div class="container">
-      <img src="{% static 'images/error.svg' %}" alt="Error 404" style="max-width: 200px;" class="mb-4">
-      <h2>ERROR 404: Página No Encontrada</h2>
-      <p>La página solicitada no se encuentra disponible.</p>
-      <p>Puede regresar al inicio para continuar navegando por nuestro sitio.</p>
-      <a href="{% url 'home' %}" class="btn btn-primary mt-3">Ir a la página principal</a>
+        <img src="{% static 'images/error.svg' %}" alt="Error 404" style="max-width: 200px;" class="mb-4">
+        <h2>ERROR 404: Página No Encontrada</h2>
+        <p>La página solicitada no se encuentra disponible.</p>
+        <p>Puede regresar al inicio para continuar navegando por nuestro sitio.</p>
+        <a href="{% url 'home' %}" class="btn btn-primary mt-3">Ir a la página principal</a>
     </div>
-  </section>
+</section>
 
-  <footer class="footer bg-dark text-white text-center py-4 mt-5">
+<footer class="footer bg-dark text-white text-center py-4 mt-5">
     <div class="container">
-      <p class="mb-1">Better Health Clinic &copy; 2025</p>
-      <small>Desarrollado por Maria Azcona, Mohamed Largo & Marçal Piró</small>
+        <p class="mb-1">Better Health Clinic &copy; 2025</p>
+        <small>Desarrollado por Maria Azcona, Mohamed Largo & Marçal Piró</small>
     </div>
-  </footer>
+</footer>
 
 </body>
 </html>

@@ -4,9 +4,16 @@ services:
   web:
     build: .
     command: python manage.py runserver 0.0.0.0:8000
+
     volumes:
       - .:/app
+      - ./.env:/app/.env:ro
+
     ports:
       - "8000:8000"
+
     environment:
       - DJANGO_SETTINGS_MODULE=project.settings
+
+    env_file:
+      - .env

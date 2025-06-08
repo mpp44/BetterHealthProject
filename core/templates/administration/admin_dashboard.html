@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Panel Superadmin</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f7f9;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        aside {
+            background: #2c3e50;
+            color: #ecf0f1;
+            width: 250px;
+            padding: 30px 20px;
+        }
+
+        aside h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        aside ul {
+            list-style: none;
+        }
+
+        aside ul li {
+            margin-bottom: 15px;
+        }
+
+        aside ul li a {
+            color: #ecf0f1;
+            text-decoration: none;
+            display: block;
+            padding: 10px 15px;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+
+        aside ul li a:hover {
+            background: #34495e;
+        }
+
+        .menu-link {
+            display: flex;
+            align-items: center;
+            gap: 10px; /* Espacio entre el icono y el texto */
+            padding: 10px 15px;
+            border-radius: 4px;
+            transition: background 0.3s;
+            color: #ecf0f1;
+            text-decoration: none;
+        }
+
+        .menu-link:hover {
+            background: #34495e;
+        }
+
+        .menu-link .icon {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+            color: #ecf0f1;
+        }
+
+        main {
+            flex: 1;
+            padding: 30px 40px;
+        }
+
+        main h1 {
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: #fff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border: 1px solid #ececec;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h3 {
+            margin-bottom: 15px;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .message.error {
+            background: #fdecea;
+            color: #e74c3c;
+        }
+
+        .message.success {
+            background: #eafaf1;
+            color: #27ae60;
+        }
+
+        form label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        form input, form select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        form button, form input[type="submit"] {
+            background: #2c3e50;
+            border: none;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        form button:hover, form input[type="submit"]:hover {
+            background: #34495e;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .table th, .table td {
+            padding: 10px;
+            border: 1px solid #ececec;
+            text-align: left;
+        }
+
+        .table thead {
+            background: #f4f7f9;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <aside>
+        <h2>Better Health</h2>
+        <ul>
+            <li>
+                <a href="#" onclick="showSection('create-superuser')" class="menu-link">
+                    <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true"
+                         xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                         viewBox="0 0 24 24">
+                        <path fill-rule="evenodd"
+                              d="M17 10v1.126c.367.095.714.24 1.032.428l.796-.797 1.415 1.415-.797.796c.188.318.333.665.428 1.032H21v2h-1.126c-.095.367-.24.714-.428 1.032l.797.796-1.415 1.415-.796-.797a3.979 3.979 0 0 1-1.032.428V20h-2v-1.126a3.977 3.977 0 0 1-1.032-.428l-.796.797-1.415-1.415.797-.796A3.975 3.975 0 0 1 12.126 16H11v-2h1.126c.095-.367.24-.714.428-1.032l-.797-.796 1.415-1.415.796.797A3.977 3.977 0 0 1 15 11.126V10h2Zm.406 3.578.016.016c.354.358.574.85.578 1.392v.028a2 2 0 0 1-3.409 1.406l-.01-.012a2 2 0 0 1 2.826-2.83ZM5 8a4 4 0 1 1 7.938.703 7.029 7.029 0 0 0-3.235 3.235A4 4 0 0 1 5 8Zm4.29 5H7a4 4 0 0 0-4 4v1a2 2 0 0 0 2 2h6.101A6.979 6.979 0 0 1 9 15c0-.695.101-1.366.29-2Z"
+                              clip-rule="evenodd"/>
+                    </svg>
+                    <span><b>Creación Superusuario</b></span>
+                </a>
+            </li>
+            <li>
+                <a href="#" onclick="showSection('users')" class="menu-link">
+                    <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true"
+                         xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                         viewBox="0 0 24 24">
+                        <path fill-rule="evenodd"
+                              d="M12 20a7.966 7.966 0 0 1-5.002-1.756l.002.001v-.683c0-1.794 1.492-3.25 3.333-3.25h3.334c1.84 0 3.333 1.456 3.333 3.25v.683A7.966 7.966 0 0 1 12 20ZM2 12C2 6.477 6.477 2 12 2s10 4.477 10 10c0 5.5-4.44 9.963-9.932 10h-.138C6.438 21.962 2 17.5 2 12Zm10-5c-1.84 0-3.333 1.455-3.333 3.25S10.159 13.5 12 13.5c1.84 0 3.333-1.455 3.333-3.25S13.841 7 12 7Z"
+                              clip-rule="evenodd"/>
+                    </svg>
+
+                    <span><b>Usuarios Creados</b></span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'admin_logout' %}" class="menu-link">
+                    <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true"
+                         xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M18 18V6h-5v12h5Zm0 0h2M4 18h2.5m3.5-5.5V12M6 6l7-2v16l-7-2V6Z"/>
+                    </svg>
+                    <span>Cerrar sesión</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+    <main>
+        <h1>Bienvenido, Superadministrador</h1>
+
+        <div id="create-superuser" class="section {% if active_section == 'create-superuser' %}active{% endif %}">
+            <div class="card">
+                <h3>Crear nuevo usuario de gestión</h3>
+                {% if messages %}
+                {% for message in messages %}
+                <div class="message {% if message.tags == 'error' %}error{% else %}success{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+                {% endif %}
+
+                <form method="POST">
+                    {% csrf_token %}
+                    <!-- Campo oculto que indica que se está creando un nuevo usuario -->
+                    <input type="hidden" name="create-superuser" value="true">
+
+                    <label for="username">Usuario:</label>
+                    <input type="text" name="username" id="username" placeholder="Nombre de usuario" required>
+
+                    <label for="password">Contraseña:</label>
+                    <input type="password" name="password" id="password" placeholder="Contraseña" required>
+
+                    <label for="role">Rol:</label>
+                    <select name="role" id="role" required>
+                        <option value="admin">Administrativo</option>
+                        <option value="finance">Financiero</option>
+                    </select>
+
+                    <input type="submit" value="Crear Usuario">
+                </form>
+            </div>
+        </div>
+
+        <div id="users" class="section {% if active_section == 'users' %}active{% endif %}">
+            <div class="card">
+                <h3>Usuarios Administrativos</h3>
+                {% if admins %}
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Nombre de Usuario</th>
+                            <th>Rol</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for admin in admins %}
+                        <tr>
+                            <td>{{ admin.username }}</td>
+                            <td>{{ admin.get_role_display }}</td>
+                            <td>
+                                {% if admin.role != "superadmin" %}
+                                <form method="post" action=""
+                                      onsubmit="return confirm('¿Estás seguro que deseas eliminar este usuario?');">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="user_type" value="staff">
+                                    <input type="hidden" name="delete_user" value="{{ admin.id }}">
+                                    <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                                </form>
+                                {% else %}
+                                <span>Inmodificable</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p>No hay usuarios administrativos registrados.</p>
+                {% endif %}
+            </div>
+
+
+            <div class="card">
+                <h3>Pacientes</h3>
+                {% if patients %}
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Nombre de Usuario</th>
+                        <th>Número de Afiliado</th>
+                        <th>Fecha de Nacimiento</th>
+                        <th>Acción</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for patient in patients %}
+                    <tr>
+                        <td>{{ patient.user.username }}</td>
+                        <td>{{ patient.numero_afiliado }}</td>
+                        <td>
+                            {% if patient.fecha_nacimiento %}
+                            {{ patient.fecha_nacimiento|date:"d/m/Y" }}
+                            {% else %}
+                            N/A
+                            {% endif %}
+                        </td>
+                        <td>
+                            <form method="post" action=""
+                                  onsubmit="return confirm('¿Estás seguro que deseas eliminar este paciente?');">
+                                {% csrf_token %}
+                                <input type="hidden" name="user_type" value="patient">
+                                <input type="hidden" name="delete_user" value="{{ patient.id }}">
+                                <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p>No hay pacientes registrados.</p>
+                {% endif %}
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<script>
+    function showSection(sectionId) {
+        var sections = document.querySelectorAll('.section');
+        sections.forEach(function (section) {
+            section.classList.remove('active');
+        });
+        document.getElementById(sectionId).classList.add('active');
+    }
+</script>
+</body>
+</html>

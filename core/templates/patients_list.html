@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Patient List</h1>
+<table>
+    <thead>
+    <tr>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Birth Date</th>
+        <th>Insurance Number</th>
+        <th>Has Insurance</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for patient in patients %}
+    <tr>
+        <td>{{ patient.nombre }}</td>
+        <td>{{ patient.apellido }}</td>
+        <td>{{ patient.fecha_nacimiento }}</td>
+        <td>{{ patient.numero_afiliado }}</td>
+        <td>{{ patient.pertenece_mutua|yesno:"Yes,No" }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -15,22 +15,17 @@ cd BetterHealthProject
 ### 2. Build Docker Image
 
 ```bash
-docker-compose build
+docker-compose build --no-cache
 ```
 
 ### 3. Start Docker Container
 
 ```bash
-docker-compose up
+docker-compose up -d
+docker-compose logs -f web
 ```
 Server will be running on: http://127.0.0.1:8000/
 
-### 4. Create a superuser (optional)
-
-```bash
-python manage.py createsuperuser
-```
-You can access Django’s admin panel at: http://127.0.0.1:8000/admin/
 
 ## Run project in remote
 
