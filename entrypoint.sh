@@ -24,5 +24,4 @@ user.set_password(password); \
 user.save(); \
 print('Superusuario creado/actualizado correctamente.')"
 
-exec "$@"
-
+exec python manage.py runserver 0.0.0.0:${PORT:-8000}
