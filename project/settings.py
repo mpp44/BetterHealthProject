@@ -26,8 +26,8 @@ SECRET_KEY = 'django-insecure-c$$szepoq3q(5j(de6o8qur-ab5c#yn(n#_k&ehyq%d80^)ujq
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["https://betterhealthproject-w1tc.onrender.com","*"]
-CSRF_TRUSTED_ORIGINS = ["https://betterhealthproject-w1tc.onrender.com"]
+ALLOWED_HOSTS = ["https://betterhealthproject-ra2z.onrender.com","*"]
+CSRF_TRUSTED_ORIGINS = ["https://betterhealthproject-ra2z.onrender.com"]
 
 # Application definition
 
