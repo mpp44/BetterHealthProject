@@ -17,7 +17,7 @@ def create_superadmin(sender, **kwargs):
     username = os.getenv("ADMIN_USERNAME")
     password = os.getenv("ADMIN_PASSWORD")
     if not username or not password:
-        print("⚠️ ADMIN_USERNAME/PASSWORD no definidos en .env")
+        print("ADMIN_USERNAME/PASSWORD no definidos en .env")
         return
 
     if StaffUser.objects.filter(username=username).exists():
@@ -26,4 +26,4 @@ def create_superadmin(sender, **kwargs):
         user = StaffUser(username=username, role='superadmin')
         user.set_password(password)
         user.save()
-        print(f"✅ Superadmin '{username}' creado desde .env")
+        print(f"Superadmin '{username}' creado desde .env")
