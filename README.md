@@ -32,5 +32,5 @@ Server will be running on: http://127.0.0.1:8000/
 ### You can also view the functionalities online following the next link (project deployed in render.com):
 
 ```
-https://betterhealthproject-w1tc.onrender.com
+https://betterhealthproject-ra2z.onrender.com
 ```
