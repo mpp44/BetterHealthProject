@@ -80,20 +80,16 @@ def check_insurance(request):
 
 @login_required
 def services(request):
-    # Partimos filtrando los servicios sin mútua
     services_db = Service.objects.filter(insurance=False)
 
-    # Extraemos parámetros enviados por GET
     search_query = request.GET.get('search', '')
     type_filter = request.GET.get('type', '')
 
-    # Aplicamos el filtro de búsqueda: nombre o descripción que contengan el texto
     if search_query:
         services_db = services_db.filter(
             Q(name__icontains=search_query) | Q(description__icontains=search_query)
         )
 
-    # Filtramos por el tipo de servicio si se ha seleccionado uno
     if type_filter:
         services_db = services_db.filter(type__iexact=type_filter)
 
@@ -102,20 +98,16 @@ def services(request):
 
 @login_required
 def insurance_services(request):
-    # Partimos filtrando los servicios que tienen mútua
     services_db = Service.objects.filter(insurance=True)
 
-    # Extraemos los parámetros GET para búsqueda y filtrado
     search_query = request.GET.get('search', '')
     type_filter = request.GET.get('type', '')
 
-    # Filtramos por búsqueda en nombre o descripción
     if search_query:
         services_db = services_db.filter(
             Q(name__icontains=search_query) | Q(description__icontains=search_query)
         )
 
-    # Filtramos por tipo de servicio
     if type_filter:
         services_db = services_db.filter(type__iexact=type_filter)
 
@@ -611,15 +603,12 @@ def admin_dashboard(request):
             elif user_type == "patient":
                 try:
                     patient = UserProfile.objects.get(id=user_id)
-                    # Si deseas eliminar también el User asociado:
                     patient.user.delete()
                     messages.success(request, f"Paciente '{patient.user.username}' eliminado correctamente.")
-                    # Si prefieres solo eliminar el perfil, usar: patient.delete()
                 except UserProfile.DoesNotExist:
                     messages.error(request, "El paciente no existe.")
             active_section = 'users'
 
-    # Cargamos las listas de usuarios para mostrar en las tablas.
     admins = StaffUser.objects.all().order_by("username")
     patients = UserProfile.objects.select_related('user').all().order_by("user__username")
 
